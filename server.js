@@ -31,8 +31,10 @@ var server = http.createServer(function(request,response){
     console.log('resource', resource);    
     if(resource == '/questions/list') {
         var questions = db.collection('test').find().toArray(function(error, data){
-          response.writeHead(200, {'Content-Type':'application/json'});
-          response.end(JSON.stringify(data));
+          response.writeHead(200, {'Content-Type':'application/json;charset=UTF-8'});
+          console.log(data);
+          var result = {status:"OK", list:data};
+          response.end(JSON.stringify(result));
         });      
 
     } else if (resource == '/questions/add') {
@@ -44,7 +46,7 @@ var server = http.createServer(function(request,response){
         request.on('data', function(data){
             var pq = querystring.parse(postdata);
             db.collection('test').insert({questioner:pq.questioner, contents:pq.contents, options:pq.options});
-            response.writeHead(200, {'Content-Type':'application/json'});
+            response.writeHead(200, {'Content-Type':'application/json','Content-Language':'ko-KR'});
             response.end('{"status":"OK"}');
         })
 
