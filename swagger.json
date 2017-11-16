@@ -1,0 +1,114 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "description": "Wepick",
+    "version": "1.0.0",
+    "title": "Swagger Wepick",
+    "termsOfService": "http://swagger.io/terms/",
+    "contact": {
+      "email": "apiteam@swagger.io"
+    },
+    "license": {
+      "name": "Apache 2.0",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+    }
+  },
+  "host": "",
+  "basePath": "/",
+  "tags": [
+    {
+      "name": "question",
+      "description": "Everything about your Question"
+    }
+  ],
+  "schemes": [
+    "http"
+  ],
+  "paths": {
+    "/questions": {
+      "post": {
+        "tags": [
+          "question"
+        ],
+        "summary": "Add a new question",
+        "description": "",
+        "operationId": "addQuestion",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Question object that needs to be added to the store",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Question"
+            }
+          }
+        ],
+        "responses": {
+          "405": {
+            "description": "Invalid input"
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "question"
+        ],
+        "summary": "Get all question list",
+        "description": "",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "ok"
+          },
+          "404": {
+            "description": "not found"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "Question": {
+      "type": "object",
+      "required": [
+        "questioner",
+        "contents",
+        "options"
+      ],
+      "properties": {
+        "questioner": {
+          "type": "string",
+          "example": "youjin"
+        },
+        "contents": {
+          "type": "string",
+          "example": "where to work"
+        },
+        "options": {
+          "type": "string",
+          "example": "facebook,amazon,netflix,google"
+        }
+      }
+    },
+    "ApiResponse": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "string"
+        },
+        "result": {
+          "type": "object"
+        }
+      }
+    }
+  }
+}
