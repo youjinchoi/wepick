@@ -41,6 +41,10 @@ app.post('/questions', function(req, res){
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
+app.use(function(req, res){
+    res.redirect('/api-docs');
+});
+
 app.listen(8080, function () { 
     console.log('Wepick app listening on port 8080!');
 });
