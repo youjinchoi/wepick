@@ -48,7 +48,13 @@
             "schema": {
               "$ref": "#/definitions/Question"
             }
-          }
+          },
+          {
+	        "in": "header",
+	        "name": "Access-Key",
+	        "description": "user accessKey",
+	        "required": true
+	      }
         ],
         "responses": {
           "405": {
@@ -74,7 +80,74 @@
           }
         }
       }
-    }
+    },
+    "/users": {
+        "post": {
+          "tags": [
+            "user"
+          ],
+          "summary": "Add a new user",
+          "description": "",
+          "operationId": "addUser",
+          "consumes": [
+            "application/json"
+          ],
+          "produces": [
+            "application/json"
+          ],
+          "parameters": [
+            {
+              "in": "body",
+              "name": "body",
+              "description": "User object that needs to be added to the store",
+              "required": true,
+              "schema": {
+                "$ref": "#/definitions/User"
+              }
+            }
+          ],
+          "responses": {
+            "403": {
+              "description": "uuid is required."
+            }
+          }
+        }
+      },
+      "/users/@Self": {
+          "get": {
+              "tags": [
+                "user"
+              ],
+              "summary": "Get a user by accessKey",
+              "description": "",
+              "operationId": "getUser",
+              "consumes": [
+                "application/json"
+              ],
+              "produces": [
+                "application/json"
+              ],
+              "parameters": [
+                {
+                  "in": "header",
+                  "name": "Access-Key",
+                  "description": "User accessKey",
+                  "required": true,
+                  "schema": {
+                    "$ref": "#/definitions/User"
+                  }
+                }
+              ],
+              "responses": {
+                "401": {
+                  "description": "Access-Key in header is required."
+                },
+                "404": {
+                    "description": "user does not exist."
+                  }
+              }
+            }
+        }
   },
   "definitions": {
     "Question": {
@@ -99,6 +172,18 @@
         }
       }
     },
+    "User": {
+        "type": "object",
+        "required": [
+          "uuid"
+        ],
+        "properties": {
+          "uuid": {
+            "type": "string",
+            "example": "asdf"
+          }
+        }
+      },
     "ApiResponse": {
       "type": "object",
       "properties": {
