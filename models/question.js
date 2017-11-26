@@ -2,7 +2,8 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var questionSchema = new Schema({
-    questioner: String,
+    seq: Number,
+	questioner: Number,
     contents: String,
     options: String
 });

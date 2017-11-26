@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var User = require('../models/user');
 var crypto = require('crypto');
+var getNextSeq = require('../autoIncrement');
 
 router.get('/@Self', function(req, res) {
 	var accessKey = req.get('Access-Key');
@@ -29,31 +30,25 @@ router.get('/@Self', function(req, res) {
 })
 
 router.post('/', function(req, res) {
-	var body = req.body;
-	var uuid = body.uuid;
-	if (!uuid || uuid == "") {
-		res.status(403).json({
-			status: "ERROR",
-			result: "uuid is required."
+	getNextSeq('user').then(result => {
+		var user = new User();
+		user.seq = result.seq;
+		var accessKey = crypto.createHash('sha256').update(result.seq.toString()).digest('hex');
+		user.accessKey = accessKey;
+		console.log('add user', user);
+		user.save(function(error) {
+			if (error) {
+				res.status(500).json({
+					status: "ERROR"
+				});
+				return;
+			}
+			res.json({
+	            status: "OK",
+	            result: {accessKey: accessKey}
+	        });
 		});
-		return;
-	}
-	var accessKey = crypto.createHash('sha256').update(uuid).digest('hex');
-	var user = new User();
-	user.uuid = uuid;
-	user.accessKey = accessKey;
-	user.save(function(error) {
-		if (error) {
-			res.status(500).json({
-				status: "ERROR"
-			});
-			return;
-		}
-		res.json({
-            status: "OK",
-            result: {accessKey: accessKey}
-        });
-	})
+	});
 });
 
 module.exports = router;

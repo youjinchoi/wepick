@@ -3,6 +3,7 @@ var questions = express.Router();
 var questionsDB = require('../db').collection('questions');
 var User = require('../models/user');
 var Question = require('../models/question');
+var getNextSeq = require('../autoIncrement');
 
 questions.get('/', function(req, res) {
 	Question.find(function(error, questions){
@@ -39,17 +40,22 @@ questions.post('/', function(req, res){
 		}
 		var body = req.body;
 		var question = new Question();
-		question.questioner = user.uuid;
-		question.contents = body.contents;
-		question.options = body.options;
-		question.save(function(error) {
-			if (error) {
-				res.status(500).json({
-					status: "ERROR"
-				})
-				return;
-			}
-			res.json({status: "OK"});
+		question.seq = getNextSeq('question');
+		getNextSeq('question').then(result => {
+			var question = new Question();
+			question.seq = result.seq;
+			question.questioner = user.seq;
+			question.contents = body.contents;
+			question.options = body.options;
+			question.save(function(error) {
+				if (error) {
+					res.status(500).json({
+						status: "ERROR"
+					})
+					return;
+				}
+				res.json({status: "OK"});
+			});
 		});
 	})
 });

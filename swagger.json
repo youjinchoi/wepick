@@ -95,22 +95,8 @@
           "produces": [
             "application/json"
           ],
-          "parameters": [
-            {
-              "in": "body",
-              "name": "body",
-              "description": "User object that needs to be added to the store",
-              "required": true,
-              "schema": {
-                "$ref": "#/definitions/User"
-              }
-            }
-          ],
-          "responses": {
-            "403": {
-              "description": "uuid is required."
-            }
-          }
+          "parameters": [],
+          "responses": {}
         }
       },
       "/users/@Self": {
@@ -153,15 +139,10 @@
     "Question": {
       "type": "object",
       "required": [
-        "questioner",
         "contents",
         "options"
       ],
       "properties": {
-        "questioner": {
-          "type": "string",
-          "example": "youjin"
-        },
         "contents": {
           "type": "string",
           "example": "where to work"
@@ -174,15 +155,7 @@
     },
     "User": {
         "type": "object",
-        "required": [
-          "uuid"
-        ],
-        "properties": {
-          "uuid": {
-            "type": "string",
-            "example": "asdf"
-          }
-        }
+        "properties": {}
       },
     "ApiResponse": {
       "type": "object",
