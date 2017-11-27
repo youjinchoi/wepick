@@ -129,6 +129,44 @@
         }
       }
     },
+    "/answers": {
+      "post": {
+        "tags": [
+          "answer"
+        ],
+        "summary": "Add a new answer",
+        "description": "",
+        "operationId": "addAnswer",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Answer object that needs to be added to the store",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Answer"
+            }
+          },
+          {
+            "in": "header",
+            "name": "Access-Key",
+            "description": "user accessKey",
+            "required": true
+          }
+        ],
+        "responses": {
+          "405": {
+            "description": "Invalid input"
+          }
+        }
+      }
+    },
     "/users": {
         "post": {
           "tags": [
@@ -198,6 +236,23 @@
         "options": {
           "type": "string",
           "example": "facebook,amazon,netflix,google"
+        }
+      }
+    },
+    "Answer": {
+      "type": "object",
+      "required": [
+        "question",
+        "selection"
+      ],
+      "properties": {
+        "question": {
+          "type": "number",
+          "example": 1
+        },
+        "selection": {
+          "type": "number",
+          "example": 2
         }
       }
     },

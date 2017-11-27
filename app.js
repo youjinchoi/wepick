@@ -7,6 +7,7 @@ var app = express();
 app.use(bodyParser.json());
 
 app.use('/questions', require('./routers/questions'));
+app.use('/answers', require('./routers/answers'));
 app.use('/users', require('./routers/users'));
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
