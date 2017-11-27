@@ -71,6 +71,54 @@
         "produces": [
           "application/json"
         ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "type",
+            "description": "값이 없을 경우 모든 질문 조회, 'my' 일 경우 내 질문 보기, 그 외 옵션 추가 예정",
+            "required": false
+          },
+          {
+            "in": "header",
+            "name": "Access-Key",
+            "description": "값이 없을 경우 모든 질문 조회",
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "ok"
+          },
+          "404": {
+            "description": "not found"
+          }
+        }
+      }
+    },
+    "/questions/{questionSeq}": {
+      "delete": {
+        "tags": [
+          "question"
+        ],
+        "summary": "Delete question by questionSeq",
+        "description": "",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "questionSeq",
+            "description": "questionSeq",
+            "required": true
+          },
+          {
+            "in": "header",
+            "name": "Access-Key",
+            "description": "questioner accessKey",
+            "required": true
+          }
+        ],
         "responses": {
           "200": {
             "description": "ok"

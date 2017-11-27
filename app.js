@@ -2,6 +2,7 @@ var express = require('express');
 const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = require('./swagger.json');
 var bodyParser = require('body-parser');
+var db = require('./db');
 var app = express();
 app.use(bodyParser.json());
 
