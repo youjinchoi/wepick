@@ -66,7 +66,7 @@
         "tags": [
           "question"
         ],
-        "summary": "Get all question list",
+        "summary": "Get question list",
         "description": "",
         "produces": [
           "application/json"
@@ -75,13 +75,25 @@
           {
             "in": "query",
             "name": "type",
-            "description": "값이 없을 경우 모든 질문 조회, 'my' 일 경우 내 질문 보기, 그 외 옵션 추가 예정",
+            "description": "로그인시 내가 등록/답변하지 않은 질문 조회, 'my' 일 경우 내가 등록한 질문 조회, 비로그인이거나 'guest'일 경우 모든 질문 조회",
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "count",
+            "description": "한번에 조회할 질문 개수. default 20",
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "next",
+            "description": "더보기 시 기준이 되는 키. 값이 없을 경우 최신 질문 목록 반환.",
             "required": false
           },
           {
             "in": "header",
             "name": "Access-Key",
-            "description": "값이 없을 경우 모든 질문 조회",
+            "description": "값이 없을 경우 비로그인으로 모든 질문 조회",
             "required": false
           }
         ],
@@ -234,8 +246,12 @@
           "example": "where to work"
         },
         "options": {
-          "type": "string",
-          "example": "facebook,amazon,netflix,google"
+          "type": "array",
+          "example": ["facebook","amazon","netflix","google"]
+        },
+        "maxAnswerCount": {
+          "type": "number",
+          "example": 50
         }
       }
     },

@@ -3,29 +3,20 @@ var router = express.Router();
 var User = require('../models/user');
 var crypto = require('crypto');
 var getNextSeq = require('../autoIncrement');
+var commonResponse = require('../commons/commonResponse');
 
 router.get('/@Self', function(req, res) {
 	var accessKey = req.get('Access-Key');
 	if (!accessKey) {
-		res.status(401).json({
-			status: "ERROR",
-			result: "Access-Key in header is required."
-		})
+		commonResponse.noAccessKey(res);
 		return;
 	}
 	User.findOne({'accessKey': accessKey}, function(error, data) {
-		if (error) {
-			res.status(404).json({
-				status: "ERROR",
-				result: "user does not exist."
-			})
+		if (error || !data) {
+			commonResponse.noUser(res);
 			return;
 		}
-		var apiResponse = {
-	            status: "OK",
-	            result: data
-	        };
-		res.json(apiResponse);
+		commonResponse.Ok(res, data);
 	})
 })
 
@@ -35,7 +26,6 @@ router.post('/', function(req, res) {
 		user.seq = result.seq;
 		var accessKey = crypto.createHash('sha256').update(result.seq.toString()).digest('hex');
 		user.accessKey = accessKey;
-		console.log('add user', user);
 		user.save(function(error) {
 			if (error) {
 				res.status(500).json({
@@ -43,10 +33,7 @@ router.post('/', function(req, res) {
 				});
 				return;
 			}
-			res.json({
-	            status: "OK",
-	            result: {accessKey: accessKey}
-	        });
+			commonResponse.Ok(res, {accessKey: accessKey});
 		});
 	});
 });

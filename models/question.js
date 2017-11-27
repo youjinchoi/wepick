@@ -5,7 +5,7 @@ var questionSchema = new Schema({
     seq: Number,
 	questioner: Number,
     contents: String,
-    options: String,
+    options: Array,
     maxAnswerCount: { type: Number, default: 50 },
     answerCount: { type: Number, default: 0 },
     isClosed: { type: Boolean, default: false }
