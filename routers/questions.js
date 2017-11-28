@@ -95,7 +95,13 @@ questions.post('/', function(req, res){
 			question.questioner = user.seq;
 			question.contents = body.contents;
 			question.maxAnswerCount = body.maxAnswerCount;
-			question.options = body.options;
+			var options = (body.options || []).map(option => {
+				return {
+					value: option,
+					count: 0
+				}
+			})
+			question.options = options;
 			question.save(function(error) {
 				if (error) {
 					commonResponse.Error(res);

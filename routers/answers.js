@@ -29,9 +29,12 @@ answers.post('/', function(req, res){
 				commonResponse.Error(res);
 				return;
 			}
+			var increase = {};
+			increase["answerCount"] = 1;
+			increase["options." + answer.selection + ".count"] = 1;
 			Question.findOneAndUpdate(
-				{seq: req.body.question},
-				{ $inc: { answerCount: 1 } },
+				{ seq: req.body.question },
+				{ $inc: increase },
 				{ new: true },
 				function(error, question) {
 					if (error) {
