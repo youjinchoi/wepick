@@ -30,7 +30,7 @@ questions.get('/', function(req, res) {
 // 모든 질문 목록(비로그인시)
 questions.listForGuestUser = function(req, res) {
 	var count = req.query.count || 20;
-	var paging = req.query.next ? {'seq': {$lt: req.query.next}} : {};
+	var paging = req.query.next ? {'seq': {$lt: req.query.next}, 'isClosed': false} : {'isClosed': false};
 	Question.find(paging).sort({'seq': -1}).limit(count).exec(function(error, questions){
 		commonResponse.Ok(res,
 			{
@@ -41,7 +41,7 @@ questions.listForGuestUser = function(req, res) {
 	});
 }
 
-// 내가 등록하거나 답변한 질문을 제외한 질문 목록(로그인시)
+// 내가 등록하거나 답변한 질문을 제외한 진행중인 질문 목록(로그인시)
 questions.listForLoginUser = function(req, res, user) {
 	var count = req.query.count || 20;
 	var pagingForAnswer = req.query.next ? {'question': {$lt: req.query.next}, 'answerer': user.seq} : {'answerer': user.seq};
@@ -51,7 +51,7 @@ questions.listForLoginUser = function(req, res, user) {
 			return answer.question;
 		});
 		//console.log('answeredQuestions', answeredQuestions);
-		var pagingForQuestion = req.query.next ? {'seq': {$lt: req.query.next, $nin: answeredQuestions}, 'questioner': {$ne: user.seq}} : {'seq': {$nin: answeredQuestions}, 'questioner': {$ne: user.seq}};
+		var pagingForQuestion = req.query.next ? {'seq': {$lt: req.query.next, $nin: answeredQuestions}, 'questioner': {$ne: user.seq}, 'isClosed': false} : {'seq': {$nin: answeredQuestions}, 'questioner': {$ne: user.seq}, 'isClosed': false};
 		Question.find(pagingForQuestion).sort({'seq': -1}).limit(count).exec(function(error, questions){
 			commonResponse.Ok(res,
 				{
@@ -65,9 +65,15 @@ questions.listForLoginUser = function(req, res, user) {
 
 // 내가 등록한 질문 목록
 questions.listForMy = function(req, res, user) {
-	Question.find({'questioner': user.seq}, function(error, questions){
-		console.log(questions);
-		commonResponse.Ok(res, questions);
+	var count = req.query.count || 20;
+	var paging = req.query.next ? {'seq': {$lt: req.query.next}, 'questioner': user.seq} : {'questioner': user.seq};
+	Question.find(paging).sort({'seq': -1}).limit(count).exec(function(error, questions){
+		commonResponse.Ok(res,
+			{
+				next: (!questions || questions.length == 0) ? null : questions[questions.length-1].seq,
+				list: questions
+			}
+		);
 	});
 }
 
@@ -129,6 +135,31 @@ questions.delete('/:questionSeq', function(req, res) {
 			return;
 		}
 		Question.remove({seq: req.params.questionSeq, 'questioner': user.seq}, function(error){
+			if (error) {
+				commonResponse.Error(res);
+				return;
+			}
+			commonResponse.Ok(res);
+		});
+	});
+});
+
+questions.patch('/close/:questionSeq', function(req, res) {
+	var accessKey = req.get('Access-Key');
+	if (!accessKey) {
+		commonResponse.noAccessKey(res);
+		return;
+	}
+	User.findOne({'accessKey': accessKey}, function(error, user) {
+		if (error) {
+			commonResponse.Error(res);
+			return;
+		}
+		if (!user) {
+			commonResponse.noUser(res);
+			return;
+		}
+		Question.update({seq: req.params.questionSeq, 'questioner': user.seq}, {$set: {'isClosed': true}}, function(error){
 			if (error) {
 				commonResponse.Error(res);
 				return;
