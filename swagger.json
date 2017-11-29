@@ -227,7 +227,17 @@
           "produces": [
             "application/json"
           ],
-          "parameters": [],
+          "parameters": [
+            {
+              "in": "body",
+              "name": "user",
+              "description": "User email, password",
+              "required": true,
+              "schema": {
+                "$ref": "#/definitions/User"
+              }
+            }
+          ],
           "responses": {}
         }
       },
@@ -264,8 +274,40 @@
                     "description": "user does not exist."
                   }
               }
+          }
+      },
+      "/login": {
+        "post": {
+          "tags": [
+            "login"
+          ],
+          "summary": "login with email and password",
+          "description": "",
+          "operationId": "login",
+          "consumes": [
+            "application/json"
+          ],
+          "produces": [
+            "application/json"
+          ],
+          "parameters": [
+            {
+              "in": "body",
+              "name": "login",
+              "description": "email and password",
+              "required": true,
+              "schema": {
+                "$ref": "#/definitions/User"
+              }
             }
+          ],
+          "responses": {
+            "404": {
+              "description": "user does not exist."
+            }
+          }
         }
+      }
   },
   "definitions": {
     "Question": {
@@ -308,7 +350,16 @@
     },
     "User": {
         "type": "object",
-        "properties": {}
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "admin@wepick.com"
+          },
+          "password": {
+            "type": "string",
+            "example": "asdf!@#"
+          }
+        }
       },
     "ApiResponse": {
       "type": "object",

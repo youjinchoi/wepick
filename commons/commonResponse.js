@@ -7,10 +7,10 @@ commonResponse.noAccessKey = function(res) {
     })
 }
 
-commonResponse.noUser = function(res) {
+commonResponse.noUser = function(res, message) {
     res.status(401).json({
         status: "ERROR",
-        result: "User does not exist."
+        result: message || "User does not exist."
     });
 }
 
@@ -27,9 +27,10 @@ commonResponse.Ok = function(res, result) {
     }
 }
 
-commonResponse.Error = function(res) {
+commonResponse.Error = function(res, message) {
     res.status(500).json({
-        status: "ERROR"
+        status: "ERROR",
+        result: message || "internal server error"
     })
 }
 

@@ -22,15 +22,24 @@ router.get('/@Self', function(req, res) {
 
 router.post('/', function(req, res) {
 	getNextSeq('user').then(result => {
+		var accessKey = crypto.createHash('sha256').update(result.seq.toString()).digest('hex');
+		var body = req.body;
 		var user = new User();
 		user.seq = result.seq;
-		var accessKey = crypto.createHash('sha256').update(result.seq.toString()).digest('hex');
 		user.accessKey = accessKey;
+		user.email = body.email;
+		user.password = crypto.createHash('sha256').update(body.password).digest('hex');
 		user.save(function(error) {
 			if (error) {
-				res.status(500).json({
-					status: "ERROR"
-				});
+				console.log(error);
+				switch(error.code) {
+					case 11000:
+						commonResponse.Error(res, user.email + " already exists.");
+						break;
+					default:
+						commonResponse.Error(res);
+						break;
+				}
 				return;
 			}
 			commonResponse.Ok(res, {accessKey: accessKey});
