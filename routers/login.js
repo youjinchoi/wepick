@@ -9,7 +9,7 @@ router.post('/', function(req, res) {
 	User.findOne({'email': body.email}, function(error, data) {
 		if (error) {
 			console.log(error);
-			commonResponse.Error(res);
+			commonResponse.error(res);
 			return;
 		}
 		
@@ -20,10 +20,10 @@ router.post('/', function(req, res) {
 
 		var password = crypto.createHash('sha256').update(body.password).digest('hex');
 		if (data.password != password) {
-			commonResponse.Error(res, "invalid password.");
+			commonResponse.error(res, "invalid password.");
 			return;
 		}
-		commonResponse.Ok(res, {accessKey: data.accessKey});
+		commonResponse.ok(res, {accessKey: data.accessKey});
 	})
 });
 

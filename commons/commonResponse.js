@@ -14,7 +14,7 @@ commonResponse.noUser = function(res, message) {
     });
 }
 
-commonResponse.Ok = function(res, result) {
+commonResponse.ok = function(res, result) {
     if (result) {
         res.json({
             status: "OK",
@@ -27,7 +27,7 @@ commonResponse.Ok = function(res, result) {
     }
 }
 
-commonResponse.Error = function(res, message) {
+commonResponse.error = function(res, message) {
     res.status(500).json({
         status: "ERROR",
         result: message || "internal server error"

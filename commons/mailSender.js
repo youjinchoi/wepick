@@ -1,12 +1,8 @@
 var nodemailer = require('nodemailer');
+var config = require('../config');
+var mailSender = {};
 
-var transporter = nodemailer.createTransport({
-	service: 'gmail',
-	auth: {
-		user: 'youremail@gmail.com',
-		pass: 'yourpassword'
-	}
-});
+var transporter = nodemailer.createTransport(config.smptTransport);
 
 mailSender.sendVerificationCode = function(address, code, callback) {
 	var mailOptions = mailSender.getVerificationMailOptions(address, code);
@@ -17,18 +13,11 @@ mailSender.sendVerificationCode = function(address, code, callback) {
 
 mailSender.getVerificationMailOptions = function(address, code) {
 	return {
-		from: 'youremail@gmail.com',
+		from: config.email.address,
 		to: address,
 		subject: 'Verification Code from Wepick!',
 		text: 'Verification Code : ' + code
 	}
-}
-
-commonResponse.Error = function(res, message) {
-    res.status(500).json({
-        status: "ERROR",
-        result: message || "internal server error"
-    })
 }
 
 module.exports = mailSender;

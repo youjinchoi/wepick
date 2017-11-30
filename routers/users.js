@@ -16,7 +16,7 @@ router.get('/@Self', function(req, res) {
 			commonResponse.noUser(res);
 			return;
 		}
-		commonResponse.Ok(res, data);
+		commonResponse.ok(res, data);
 	})
 })
 
@@ -34,17 +34,28 @@ router.post('/', function(req, res) {
 				console.log(error);
 				switch(error.code) {
 					case 11000:
-						commonResponse.Error(res, user.email + " already exists.");
+						commonResponse.error(res, user.email + " already exists.");
 						break;
 					default:
-						commonResponse.Error(res);
+						commonResponse.error(res);
 						break;
 				}
 				return;
 			}
-			commonResponse.Ok(res, {accessKey: accessKey});
+			commonResponse.ok(res, {accessKey: accessKey});
 		});
 	});
 });
+
+router.get('/validate', function(req, res) {
+	var email = req.query.email;
+	User.findOne({'email': email}, function(error, user) {
+		if (error) {
+			commonResponse.error(res);
+			return;
+		}
+		commonResponse.ok(res, {isValid: !user});
+	})
+})
 
 module.exports = router;

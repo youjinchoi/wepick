@@ -13,7 +13,7 @@ answers.post('/', function(req, res){
 	}
 	User.findOne({'accessKey': accessKey}, function(error, user) {
 		if (error) {
-			commonResponse.Error(res);
+			commonResponse.error(res);
 			return;
 		}
 		if (!user) {
@@ -26,7 +26,7 @@ answers.post('/', function(req, res){
 		answer.selection = req.body.selection;
 		answer.save(function(error) {
 			if (error) {
-				commonResponse.Error(res);
+				commonResponse.error(res);
 				return;
 			}
 			var increase = {};
@@ -38,21 +38,21 @@ answers.post('/', function(req, res){
 				{ new: true },
 				function(error, question) {
 					if (error) {
-						commonResponse.Error(res);
+						commonResponse.error(res);
 						return;
 					}
 
 					if (question.answerCount == question.maxAnswerCount) {
 						question.update({isClosed: true}, function(error) {
 							if (error) {
-								commonResponse.Error(res);
+								commonResponse.error(res);
 								return;
 							}
-							commonResponse.Ok(res);
+							commonResponse.ok(res);
 							return ;
 						})
 					} else {
-						commonResponse.Ok(res);
+						commonResponse.ok(res);
 						return ;
 					}
 				}

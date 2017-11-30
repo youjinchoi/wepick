@@ -32,7 +32,7 @@ questions.listForGuestUser = function(req, res) {
 	var count = req.query.count || 20;
 	var paging = req.query.next ? {'seq': {$lt: req.query.next}, 'isClosed': false} : {'isClosed': false};
 	Question.find(paging).sort({'seq': -1}).limit(count).exec(function(error, questions){
-		commonResponse.Ok(res,
+		commonResponse.ok(res,
 			{
 				next: (!questions || questions.length == 0) ? null : questions[questions.length-1].seq,
 				list: questions
@@ -53,7 +53,7 @@ questions.listForLoginUser = function(req, res, user) {
 		//console.log('answeredQuestions', answeredQuestions);
 		var pagingForQuestion = req.query.next ? {'seq': {$lt: req.query.next, $nin: answeredQuestions}, 'questioner': {$ne: user.seq}, 'isClosed': false} : {'seq': {$nin: answeredQuestions}, 'questioner': {$ne: user.seq}, 'isClosed': false};
 		Question.find(pagingForQuestion).sort({'seq': -1}).limit(count).exec(function(error, questions){
-			commonResponse.Ok(res,
+			commonResponse.ok(res,
 				{
 					next: (!questions || questions.length == 0) ? null : questions[questions.length-1].seq,
 					list: questions
@@ -68,7 +68,7 @@ questions.listForMy = function(req, res, user) {
 	var count = req.query.count || 20;
 	var paging = req.query.next ? {'seq': {$lt: req.query.next}, 'questioner': user.seq} : {'questioner': user.seq};
 	Question.find(paging).sort({'seq': -1}).limit(count).exec(function(error, questions){
-		commonResponse.Ok(res,
+		commonResponse.ok(res,
 			{
 				next: (!questions || questions.length == 0) ? null : questions[questions.length-1].seq,
 				list: questions
@@ -85,7 +85,7 @@ questions.post('/', function(req, res){
 	}
 	User.findOne({'accessKey': accessKey}, function(error, user) {
 		if (error) {
-			commonResponse.Error(res);
+			commonResponse.error(res);
 			return;
 		}
 		if (!user) {
@@ -110,10 +110,10 @@ questions.post('/', function(req, res){
 			question.options = options;
 			question.save(function(error) {
 				if (error) {
-					commonResponse.Error(res);
+					commonResponse.error(res);
 					return;
 				}
-				commonResponse.Ok(res);
+				commonResponse.ok(res);
 			});
 		});
 	})
@@ -127,7 +127,7 @@ questions.delete('/:questionSeq', function(req, res) {
 	}
 	User.findOne({'accessKey': accessKey}, function(error, user) {
 		if (error) {
-			commonResponse.Error(res);
+			commonResponse.error(res);
 			return;
 		}
 		if (!user) {
@@ -136,10 +136,10 @@ questions.delete('/:questionSeq', function(req, res) {
 		}
 		Question.remove({seq: req.params.questionSeq, 'questioner': user.seq}, function(error){
 			if (error) {
-				commonResponse.Error(res);
+				commonResponse.error(res);
 				return;
 			}
-			commonResponse.Ok(res);
+			commonResponse.ok(res);
 		});
 	});
 });
@@ -152,7 +152,7 @@ questions.patch('/close/:questionSeq', function(req, res) {
 	}
 	User.findOne({'accessKey': accessKey}, function(error, user) {
 		if (error) {
-			commonResponse.Error(res);
+			commonResponse.error(res);
 			return;
 		}
 		if (!user) {
@@ -161,10 +161,10 @@ questions.patch('/close/:questionSeq', function(req, res) {
 		}
 		Question.update({seq: req.params.questionSeq, 'questioner': user.seq}, {$set: {'isClosed': true}}, function(error){
 			if (error) {
-				commonResponse.Error(res);
+				commonResponse.error(res);
 				return;
 			}
-			commonResponse.Ok(res);
+			commonResponse.ok(res);
 		});
 	});
 });

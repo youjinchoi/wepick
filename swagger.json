@@ -241,7 +241,7 @@
           "responses": {}
         }
       },
-      "/users/@Self": {
+    "/users/@Self": {
           "get": {
               "tags": [
                 "user"
@@ -276,7 +276,33 @@
               }
           }
       },
-      "/login": {
+    "/users/validate": {
+      "get": {
+        "tags": [
+          "user"
+        ],
+        "summary": "Check if an emaill address exists.",
+        "description": "",
+        "operationId": "validate",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "email",
+            "description": "email address",
+            "required": true
+          }
+        ],
+        "responses": {
+        }
+      }
+    },
+    "/login": {
         "post": {
           "tags": [
             "login"
@@ -307,7 +333,73 @@
             }
           }
         }
+      },
+    "/verifications": {
+      "post": {
+        "tags": [
+          "verification"
+        ],
+        "summary": "send verification email",
+        "description": "",
+        "operationId": "verification",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "email",
+            "description": "email address",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Email"
+            }
+          }
+        ],
+        "responses": {
+          "404": {
+            "description": "user does not exist."
+          }
+        }
       }
+    },
+    "/verifications/{verificationSeq}/{verificationCode}": {
+      "get": {
+        "tags": [
+          "verification"
+        ],
+        "summary": "",
+        "description": "",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "verificationSeq",
+            "description": "verificationSeq",
+            "required": true
+          },
+          {
+            "in": "path",
+            "name": "verificationCode",
+            "description": "verificationCode",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "ok"
+          },
+          "404": {
+            "description": "not found"
+          }
+        }
+      }
+    }
   },
   "definitions": {
     "Question": {
@@ -361,6 +453,15 @@
           }
         }
       },
+    "Email": {
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string",
+          "example": "yj1361@naver.com"
+        }
+      }
+    },
     "ApiResponse": {
       "type": "object",
       "properties": {
