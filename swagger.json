@@ -213,14 +213,14 @@
         }
       }
     },
-    "/users": {
+    "/members": {
         "post": {
           "tags": [
-            "user"
+            "member"
           ],
-          "summary": "Add a new user",
+          "summary": "Add a new member",
           "description": "",
-          "operationId": "addUser",
+          "operationId": "addMember",
           "consumes": [
             "application/json"
           ],
@@ -230,25 +230,25 @@
           "parameters": [
             {
               "in": "body",
-              "name": "user",
-              "description": "User email, password",
+              "name": "member",
+              "description": "Member email, password",
               "required": true,
               "schema": {
-                "$ref": "#/definitions/User"
+                "$ref": "#/definitions/Member"
               }
             }
           ],
           "responses": {}
         }
       },
-    "/users/@Self": {
+    "/members/@Self": {
           "get": {
               "tags": [
-                "user"
+                "member"
               ],
               "summary": "Get a user by accessKey",
               "description": "",
-              "operationId": "getUser",
+              "operationId": "getMember",
               "consumes": [
                 "application/json"
               ],
@@ -259,10 +259,10 @@
                 {
                   "in": "header",
                   "name": "Access-Key",
-                  "description": "User accessKey",
+                  "description": "Member accessKey",
                   "required": true,
                   "schema": {
-                    "$ref": "#/definitions/User"
+                    "$ref": "#/definitions/Member"
                   }
                 }
               ],
@@ -276,32 +276,24 @@
               }
           }
       },
-    "/users/validate": {
-      "get": {
-        "tags": [
-          "user"
-        ],
-        "summary": "Check if an emaill address exists.",
-        "description": "",
-        "operationId": "validate",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "parameters": [
-          {
-            "in": "query",
-            "name": "email",
-            "description": "email address",
-            "required": true
+      "/guests": {
+          "post": {
+            "tags": [
+              "guest"
+            ],
+            "summary": "게스트 로그인. accessKey 생성 후 리턴",
+            "description": "",
+            "operationId": "addGuest",
+            "consumes": [
+              "application/json"
+            ],
+            "produces": [
+              "application/json"
+            ],
+            "parameters": [],
+            "responses": {}
           }
-        ],
-        "responses": {
-        }
-      }
-    },
+        },
     "/login": {
         "post": {
           "tags": [
@@ -440,7 +432,7 @@
         }
       }
     },
-    "User": {
+    "Member": {
         "type": "object",
         "properties": {
           "email": {

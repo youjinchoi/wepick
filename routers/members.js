@@ -5,6 +5,8 @@ var crypto = require('crypto');
 var getNextSeq = require('../autoIncrement');
 var commonResponse = require('../commons/commonResponse');
 
+var MEMBER = 2;
+
 router.get('/@Self', function(req, res) {
 	var accessKey = req.get('Access-Key');
 	if (!accessKey) {
@@ -26,6 +28,7 @@ router.post('/', function(req, res) {
 		var body = req.body;
 		var user = new User();
 		user.seq = result.seq;
+		user.type = MEMBER;
 		user.accessKey = accessKey;
 		user.email = body.email;
 		user.password = crypto.createHash('sha256').update(body.password).digest('hex');
@@ -47,7 +50,7 @@ router.post('/', function(req, res) {
 	});
 });
 
-router.get('/validate', function(req, res) {
+/*router.get('/validate', function(req, res) {
 	var email = req.query.email;
 	User.findOne({'email': email}, function(error, user) {
 		if (error) {
@@ -56,6 +59,6 @@ router.get('/validate', function(req, res) {
 		}
 		commonResponse.ok(res, {isValid: !user});
 	})
-})
+})*/
 
 module.exports = router;

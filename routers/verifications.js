@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var Verification = require('../models/verification');
+var User = require('../models/user');
 var getNextSeq = require('../autoIncrement');
 var commonResponse = require('../commons/commonResponse');
 var util = require('../commons/util');
@@ -9,32 +10,42 @@ var mailSender = require('../commons/mailSender');
 
 router.post('/', function(req, res) {
 	var body = req.body;
-	getNextSeq('verification').then(result => {
-		if (!result) {
+	User.findOne({'email': body.email}, function(error, user) {
+		if (error) {
 			commonResponse.error(res);
 			return;
 		}
-		var verification = new Verification();
-		verification.seq = result.seq;
-		verification.code = util.getRandomNumber(1000, 9999);
-		verification.save(function(error) {
-			if (error) {
+		if (user) {
+			commonResponse.error(res, 'email already exists.');
+			return;
+		}
+		getNextSeq('verification').then(result => {
+			if (!result) {
 				commonResponse.error(res);
 				return;
 			}
-			mailSender.sendVerificationCode(body.email, verification.code, 
-				function(error, info) {
-					if (error) {
-						console.error(error);
-						commonResponse.error(res);
-						return;
-					}
-					console.debug(info);
-					commonResponse.ok(res, {verificationSeq: verification.seq});
+			var verification = new Verification();
+			verification.seq = result.seq;
+			verification.code = util.getRandomNumber(1000, 9999);
+			verification.save(function(error) {
+				if (error) {
+					commonResponse.error(res);
+					return;
 				}
-			)
-		})
-	});
+				mailSender.sendVerificationCode(body.email, verification.code, 
+					function(error, info) {
+						if (error) {
+							console.error(error);
+							commonResponse.error(res);
+							return;
+						}
+						console.debug(info);
+						commonResponse.ok(res, {verificationSeq: verification.seq});
+					}
+				)
+			})
+		});
+	})
 });
 	
 router.get('/:verificationSeq/:verificationCode', function(req, res) {
