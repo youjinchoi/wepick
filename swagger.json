@@ -32,7 +32,6 @@
         ],
         "summary": "Add a new question",
         "description": "",
-        "operationId": "addQuestion",
         "consumes": [
           "application/json"
         ],
@@ -281,9 +280,8 @@
             "tags": [
               "guest"
             ],
-            "summary": "게스트 로그인. accessKey 생성 후 리턴",
+            "summary": "게스트 회원 등록. accessKey 생성 후 리턴",
             "description": "",
-            "operationId": "addGuest",
             "consumes": [
               "application/json"
             ],
@@ -292,8 +290,30 @@
             ],
             "parameters": [],
             "responses": {}
-          }
-        },
+          },
+          "delete": {
+              "tags": [
+                "guest"
+              ],
+              "summary": "게스트 회원 삭제(회원정보 및 등록한 질문 삭제)",
+              "description": "",
+              "consumes": [
+                "application/json"
+              ],
+              "produces": [
+                "application/json"
+              ],
+              "parameters": [
+            	  {
+          	        "in": "header",
+          	        "name": "Access-Key",
+          	        "description": "accessKey",
+          	        "required": true
+          	      }
+              ],
+              "responses": {}
+            }
+      },
     "/login": {
         "post": {
           "tags": [
@@ -315,7 +335,7 @@
               "description": "email and password",
               "required": true,
               "schema": {
-                "$ref": "#/definitions/User"
+                "$ref": "#/definitions/Member"
               }
             }
           ],
@@ -434,6 +454,10 @@
     },
     "Member": {
         "type": "object",
+        "required": [
+            "email",
+            "password"
+          ],
         "properties": {
           "email": {
             "type": "string",
@@ -447,6 +471,9 @@
       },
     "Email": {
       "type": "object",
+      "required": [
+          "email"
+        ],
       "properties": {
         "email": {
           "type": "string",

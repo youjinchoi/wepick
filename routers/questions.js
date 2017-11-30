@@ -139,7 +139,13 @@ questions.delete('/:questionSeq', function(req, res) {
 				commonResponse.error(res);
 				return;
 			}
-			commonResponse.ok(res);
+			Answer.remove({'question': req.params.questionSeq}, function(error) {
+				if (error) {
+					commonResponse.error(res);
+					return;
+				}
+				commonResponse.ok(res);
+			})
 		});
 	});
 });

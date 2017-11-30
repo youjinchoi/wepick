@@ -20,43 +20,53 @@ answers.post('/', function(req, res){
 			commonResponse.noUser(res);
 			return;
 		}
-		var answer = new Answer();
-		answer.question = req.body.question;
-		answer.answerer = user.seq;
-		answer.selection = req.body.selection;
-		answer.save(function(error) {
+		Question.findOne({'seq': request.body.question}, function(error, question) {
 			if (error) {
 				commonResponse.error(res);
 				return;
 			}
-			var increase = {};
-			increase["answerCount"] = 1;
-			increase["options." + answer.selection + ".count"] = 1;
-			Question.findOneAndUpdate(
-				{ seq: req.body.question },
-				{ $inc: increase },
-				{ new: true },
-				function(error, question) {
-					if (error) {
-						commonResponse.error(res);
-						return;
-					}
-
-					if (question.answerCount == question.maxAnswerCount) {
-						question.update({isClosed: true}, function(error) {
-							if (error) {
-								commonResponse.error(res);
-								return;
-							}
+			if (!question) {
+				commonResponse.error(res);
+				return;
+			}
+			var answer = new Answer();
+			answer.question = question.seq;
+			answer.questioner = question.questioner;
+			answer.answerer = user.seq;
+			answer.selection = req.body.selection;
+			answer.save(function(error) {
+				if (error) {
+					commonResponse.error(res);
+					return;
+				}
+				var increase = {};
+				increase["answerCount"] = 1;
+				increase["options." + answer.selection + ".count"] = 1;
+				Question.findOneAndUpdate(
+					{ seq: req.body.question },
+					{ $inc: increase },
+					{ new: true },
+					function(error, question) {
+						if (error) {
+							commonResponse.error(res);
+							return;
+						}
+						if (question.answerCount == question.maxAnswerCount) {
+							question.update({isClosed: true}, function(error) {
+								if (error) {
+									commonResponse.error(res);
+									return;
+								}
+								commonResponse.ok(res);
+								return ;
+							})
+						} else {
 							commonResponse.ok(res);
 							return ;
-						})
-					} else {
-						commonResponse.ok(res);
-						return ;
+						}
 					}
-				}
-			)
+				)
+			});
 		});
 	})
 });
