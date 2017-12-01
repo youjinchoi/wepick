@@ -467,7 +467,41 @@
           }
         }
       }
-    }
+    },
+    "/pushes/tokens": {
+        "put": {
+          "tags": [
+            "push"
+          ],
+          "summary": "Save user push token.",
+          "description": "",
+          "consumes": [
+            "application/json"
+          ],
+          "produces": [
+            "application/json"
+          ],
+          "parameters": [
+            {
+              "in": "body",
+              "name": "token",
+              "description": "push token",
+              "required": true,
+              "schema": {
+                "$ref": "#/definitions/Token"
+              }
+            },
+	        {
+		      "in": "header",
+		      "name": "Access-Key",
+		      "description": "accessKey",
+		      "required": true
+		    }
+          ],
+          "responses": {
+          }
+        }
+      }
   },
   "definitions": {
     "Question": {
@@ -537,6 +571,18 @@
         }
       }
     },
+    "Token": {
+        "type": "object",
+        "required": [
+            "token"
+          ],
+        "properties": {
+          "token": {
+            "type": "string",
+            "example": "wertyujhgfdxcvbn"
+          }
+        }
+      },
     "ApiResponse": {
       "type": "object",
       "properties": {

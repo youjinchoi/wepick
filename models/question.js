@@ -8,7 +8,8 @@ var questionSchema = new Schema({
     options: Array,
     maxAnswerCount: { type: Number, default: 50 },
     answerCount: { type: Number, default: 0 },
-    isClosed: { type: Boolean, default: false }
+    isClosed: { type: Boolean, default: false },
+    createDate: {type: Date, default: Date.now}
 });
 
 module.exports = mongoose.model('question', questionSchema);

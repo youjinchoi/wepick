@@ -6,7 +6,8 @@ var answerSchema = new Schema({
 	answerer: Number,
 	questioner: Number,
     type: Number,
-    selection: Number
+    selection: Number,
+    createDate: {type: Date, default: Date.now}
 });
 
 module.exports = mongoose.model('answer', answerSchema);
