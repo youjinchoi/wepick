@@ -5,6 +5,8 @@ var Question = require('../models/question');
 var Answer = require('../models/answer');
 var commonResponse = require('../commons/commonResponse');
 
+var ANSWERED = 1;
+
 answers.post('/', function(req, res){
 	var accessKey = req.get('Access-Key');
 	if (!accessKey) {
@@ -20,7 +22,7 @@ answers.post('/', function(req, res){
 			commonResponse.noUser(res);
 			return;
 		}
-		Question.findOne({'seq': request.body.question}, function(error, question) {
+		Question.findOne({'seq': req.body.question}, function(error, question) {
 			if (error) {
 				commonResponse.error(res);
 				return;

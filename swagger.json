@@ -174,6 +174,40 @@
         }
       }
     },
+    "/questions/skip/{questionSeq}": {
+        "post": {
+          "tags": [
+            "question"
+          ],
+          "summary": "Skip question by questionSeq",
+          "description": "",
+          "produces": [
+            "application/json"
+          ],
+          "parameters": [
+            {
+              "in": "path",
+              "name": "questionSeq",
+              "description": "questionSeq",
+              "required": true
+            },
+            {
+              "in": "header",
+              "name": "Access-Key",
+              "description": "questioner accessKey",
+              "required": true
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "ok"
+            },
+            "404": {
+              "description": "not found"
+            }
+          }
+        }
+      },
     "/answers": {
       "post": {
         "tags": [

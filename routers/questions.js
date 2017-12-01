@@ -175,4 +175,41 @@ questions.patch('/close/:questionSeq', function(req, res) {
 	});
 });
 
+var SKIPPED = 0;
+questions.post('/skip/:questionSeq', function(req, res) {
+	var accessKey = req.get('Access-Key');
+	if (!accessKey) {
+		commonResponse.noAccessKey(res);
+		return;
+	}
+	User.findOne({'accessKey': accessKey}, function(error, user) {
+		if (error) {
+			commonResponse.error(res);
+			return;
+		}
+		if (!user) {
+			commonResponse.noUser(res);
+			return;
+		}
+		Question.findOne({seq: req.params.questionSeq}, function(error, question){
+			if (error) {
+				commonResponse.error(res);
+				return;
+			}
+			var answer = new Answer();
+			answer.question = question.seq;
+			answer.answerer = user.seq;
+			answer.questioner = question.questioner;
+			answer.type = SKIPPED;
+			answer.save(function(error) {
+				if (error) {
+					commonResponse.error(res);
+					return;
+				}
+				commonResponse.ok(res);
+			})
+		});
+	});
+});
+
 module.exports = questions;
