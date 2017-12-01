@@ -272,7 +272,29 @@
             }
           ],
           "responses": {}
-        }
+        },
+        "delete": {
+            "tags": [
+              "member"
+            ],
+            "summary": "일반 회원 탈퇴(회원정보 및 등록한 질문 삭제)",
+            "description": "",
+            "consumes": [
+              "application/json"
+            ],
+            "produces": [
+              "application/json"
+            ],
+            "parameters": [
+          	  {
+        	        "in": "header",
+        	        "name": "Access-Key",
+        	        "description": "accessKey",
+        	        "required": true
+        	      }
+            ],
+            "responses": {}
+          }
       },
     "/members/@Self": {
           "get": {
@@ -329,7 +351,7 @@
               "tags": [
                 "guest"
               ],
-              "summary": "게스트 회원 삭제(회원정보 및 등록한 질문 삭제)",
+              "summary": "게스트 회원 탈퇴(회원정보 및 등록한 질문 삭제)",
               "description": "",
               "consumes": [
                 "application/json"

@@ -1,6 +1,8 @@
 var express = require('express');
 var router = express.Router();
 var User = require('../models/user');
+var Question = require('../models/question');
+var Answer = require('../models/answer');
 var crypto = require('crypto');
 var getNextSeq = require('../autoIncrement');
 var commonResponse = require('../commons/commonResponse');
@@ -48,6 +50,43 @@ router.post('/', function(req, res) {
 			commonResponse.ok(res, {accessKey: accessKey});
 		});
 	});
+});
+
+router.delete('/', function(req, res) {
+	var accessKey = req.get('Access-Key');
+	if (!accessKey) {
+		commonResponse.noAccessKey(res);
+		return;
+	}
+	User.findOne({'accessKey': accessKey}, function(error, user) {
+		if (error) {
+			commonResponse.error(res);
+			return;
+		}
+		if (!user) {
+			commonResponse.error(res);
+			return;
+		}
+		user.remove(function(error) {
+			if (error) {
+				commonResponse.error(res);
+				return;
+			}
+			Question.remove({'questioner': user.seq}, function(error) {
+				if (error) {
+					commonResponse.error(res);
+					return;
+				}
+				Answer.remove({'questioner': user.seq}, function(error) {
+					if (error) {
+						commonResponse.error(res);
+						return;
+					}
+					commonResponse.ok(res);
+				})
+			})
+		})
+	})
 });
 
 /*router.get('/validate', function(req, res) {
