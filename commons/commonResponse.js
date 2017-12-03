@@ -3,7 +3,7 @@ var messages = require('./messages');
 var commonResponse = {};
 
 commonResponse.noAccessKey = function(res) {
-    res.status(401).json({
+    return res.status(401).json({
         status: "ERROR",
         result: {
         	code: 1001,
@@ -13,7 +13,7 @@ commonResponse.noAccessKey = function(res) {
 }
 
 commonResponse.noUser = function(res, message) {
-    res.status(401).json({
+    return res.status(401).json({
         status: "ERROR",
         result: {
         	code: 1002,
@@ -24,19 +24,19 @@ commonResponse.noUser = function(res, message) {
 
 commonResponse.ok = function(res, result) {
     if (result) {
-        res.json({
+        return res.json({
             status: "OK",
             result: result
         });
     } else {
-        res.json({
+        return res.json({
             status: "OK"
         });
     }
 }
 
 commonResponse.error = function(res, message) {
-    res.status(500).json({
+    return res.status(500).json({
         status: "ERROR",
         result: message || "internal server error"
     })

@@ -20,7 +20,7 @@ router.put('/tokens', function(req, res, next){
 		return user.update({$set: {'pushToken': req.body.token}})
 	})
 	.then(() => {
-		commonResponse.ok(res);
+		return commonResponse.ok(res);
 	})
 	.catch(next);
 });
