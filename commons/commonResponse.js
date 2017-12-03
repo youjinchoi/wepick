@@ -1,16 +1,24 @@
+var messages = require('./messages');
+
 var commonResponse = {};
 
 commonResponse.noAccessKey = function(res) {
     res.status(401).json({
         status: "ERROR",
-        result: "Access-Key in header is required."
+        result: {
+        	code: 1001,
+        	message: messages.NO_ACCESS_KEY
+        }
     })
 }
 
 commonResponse.noUser = function(res, message) {
     res.status(401).json({
         status: "ERROR",
-        result: message || "User does not exist."
+        result: {
+        	code: 1002,
+        	message: messages.NO_USER
+        }
     });
 }
 

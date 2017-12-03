@@ -4,6 +4,8 @@ const swaggerDocument = require('./swagger.json');
 var bodyParser = require('body-parser');
 var db = require('./db');
 var commonResponse = require('./commons/commonResponse');
+var NoAccessKeyError = require('./errors/NoAccessKeyError');
+var NoUserError = require('./errors/NoUserError');
 var app = express();
 app.use(bodyParser.json());
 
@@ -23,7 +25,13 @@ app.use(function(req, res){
 
 app.use(function (err, req, res, next) {
 	console.error(err);
-	commonResponse.error(res);
+	if (err instanceof NoAccessKeyError) {
+		commonResponse.noAccessKey(res);
+	} else if (err instanceof NoUserError) {
+		commonResponse.noUser(res);
+	} else {
+		commonResponse.error(res);
+	}
 })
 
 app.listen(8080, function () { 
