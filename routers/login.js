@@ -4,27 +4,31 @@ var User = require('../models/user');
 var crypto = require('crypto');
 var commonResponse = require('../commons/commonResponse');
 
-router.post('/', function(req, res) {
+router.post('/', function(req, res, next) {
 	var body = req.body;
-	User.findOne({'email': body.email}, function(error, data) {
-		if (error) {
-			console.log(error);
-			commonResponse.error(res);
+	if (!body.email) {
+		commonResponse.error("email is required.");
+		return;
+	}
+	if (!body.password) {
+		commonResponse.error("password is required.");
+		return;
+	}
+	User.findOne({'email': body.email})
+	.then(user => {
+		if (!user) {
+			commonResponse.noUser(res);
 			return;
 		}
-		
-		if (!data) {
-			commonResponse.noUser(res, "email does not exists.");
-			return;
-		}
-
 		var password = crypto.createHash('sha256').update(body.password).digest('hex');
-		if (data.password != password) {
+		if (user.password != password) {
 			commonResponse.error(res, "invalid password.");
 			return;
 		}
-		commonResponse.ok(res, {accessKey: data.accessKey});
+		commonResponse.ok(res, {accessKey: user.accessKey});
+		return;
 	})
+	.catch(next);
 });
 
 module.exports = router;

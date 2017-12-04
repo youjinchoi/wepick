@@ -8,7 +8,6 @@ var NoAccessKeyError = require('../errors/NoAccessKeyError');
 var NoUserError = require('../errors/NoUserError');
 var messages = require('../commons/messages');
 
-var ANSWERED = 1;
 
 answers.post('/', function(req, res, next){
 	var accessKey = req.get('Access-Key');
@@ -23,7 +22,6 @@ answers.post('/', function(req, res, next){
 		return Question.findOne({'seq': req.body.question}).then(question => {return {question:question, user:user}});
 	})
 	.then(data => {
-		console.log(data);
 		var answer = new Answer();
 		answer.question = data.question.seq;
 		answer.questioner = data.question.questioner;
@@ -31,7 +29,7 @@ answers.post('/', function(req, res, next){
 		answer.selection = req.body.selection;
 		return answer.save().then(() => answer);
 	})
-	.then(user => {
+	.then(answer => {
 		var increase = {};
 		increase["answerCount"] = 1;
 		increase["options." + answer.selection + ".count"] = 1;
@@ -43,14 +41,10 @@ answers.post('/', function(req, res, next){
 	})
 	.then(question => {
 		if (question.answerCount == question.maxAnswerCount) {
-			 return question.update({isClosed: true}, function(error) {
-			})
+			 return question.update({isClosed: true}).then(() => commonResponse.ok(res));
 		} else {
 			return commonResponse.ok(res);
 		}
-	})
-	.then(() => {
-		return commonResponse.ok(res);
 	})
 	.catch(next);
 });

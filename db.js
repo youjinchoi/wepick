@@ -1,4 +1,5 @@
 var mongoose = require('mongoose');
+mongoose.Promise = global.Promise;
 //for dev
 //mongoose.connect('mongodb://10.106.144.145:27017/test');
 //for real
