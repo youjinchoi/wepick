@@ -7,11 +7,11 @@ var commonResponse = require('../commons/commonResponse');
 router.post('/', function(req, res, next) {
 	var body = req.body;
 	if (!body.email) {
-		commonResponse.error("email is required.");
+		commonResponse.error(res, "email is required.");
 		return;
 	}
 	if (!body.password) {
-		commonResponse.error("password is required.");
+		commonResponse.error(res, "password is required.");
 		return;
 	}
 	User.findOne({'email': body.email})
