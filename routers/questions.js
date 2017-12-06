@@ -113,7 +113,7 @@ questions.post('/', function(req, res){
 					commonResponse.error(res);
 					return;
 				}
-				commonResponse.ok(res);
+				commonResponse.ok(res, question);
 			});
 		});
 	})
