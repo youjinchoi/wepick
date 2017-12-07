@@ -1,56 +1,80 @@
 var express = require('express');
-var questions = express.Router();
+var router = express.Router();
 var User = require('../models/user');
 var Question = require('../models/question');
 var Answer = require('../models/answer');
 var getNextSeq = require('../autoIncrement');
 var commonResponse = require('../commons/commonResponse');
 
-questions.get('/', function(req, res, next) {
+var filterObject = function(question) {
+	if (!question) {
+		return null;
+	}
+	var temp = question.toObject();
+	delete temp._id;
+	delete temp.__v;
+	delete temp.answerers;
+	temp.createDate = temp.createDate.getTime();
+	return temp;
+}
+
+var filterList = function(questions) {
+	if (!questions || questions.length == 0) {
+		return [];
+	}
+	return questions.map(question => {
+		return filterObject(question);
+	})
+}
+
+router.get('/', function(req, res, next) {
 	var accessKey = req.get('Access-Key');
 	if (req.query.type == 'guest' || !accessKey) {
-		questions.listForGuestUser(req, res);
+		router.listForGuestUser(req, res);
 		return;
 	}
 	User.findOne({'accessKey': accessKey}, function(error, user) {
 		if (error || !user) {
-			questions.listForGuestUser(req, res, next);
+			router.listForGuestUser(req, res, next);
 			return;
 		}
 		if (req.query.type == 'my') {
-			questions.listForMy(req, res, user, next);
+			router.listForMy(req, res, user, next);
 			return;
 		} else {
-			questions.listForLoginUser(req, res, user, next);
+			router.listForLoginUser(req, res, user, next);
 			return;
 		}
 	});
 });
 
 // 모든 질문 목록(비로그인시)
-questions.listForGuestUser = function(req, res) {
+router.listForGuestUser = function(req, res) {
 	var count = req.query.count || 20;
 	var paging = req.query.next ? {'seq': {$lt: req.query.next}, 'isClosed': false} : {'isClosed': false};
 	Question.find(paging).sort({'seq': -1}).limit(count).exec(function(error, questions){
+		var filtered = filterList(questions);
+		console.log(filtered);
 		commonResponse.ok(res,
 			{
-				next: (!questions || questions.length == 0) ? null : questions[questions.length-1].seq,
-				list: questions
+				next: (!filtered || filtered.length == 0) ? null : filtered[filtered.length-1].seq,
+				list: filtered
 			}
 		);
 	});
 }
 
 // 내가 등록하거나 답변한 질문을 제외한 진행중인 질문 목록(로그인시)
-questions.listForLoginUser = function(req, res, user, next) {
+router.listForLoginUser = function(req, res, user, next) {
 	var count = req.query.count || 20;
 	var query = req.query.next ? { 'seq': { $lt: req.query.next }, 'questioner' : { $ne: user.seq }, 'answerers': { $nin: [user.seq] } } : { 'questioner' : { $ne: user.seq }, 'answerers': { $nin: [user.seq] } };
 	Question.find(query).sort({'seq': -1}).limit(count)
 	.then(questions => {
+		var filtered = filterList(questions);
 		commonResponse.ok(res,
 			{
-				next: (!questions || questions.length == 0) ? null : questions[questions.length-1].seq,
-				list: questions
+				next: (!filtered || filtered.length == 0) ? null : filtered[filtered.length-1].seq,
+				list: filtered
 			}
 		);
 	})
@@ -58,20 +82,23 @@ questions.listForLoginUser = function(req, res, user, next) {
 }
 
 // 내가 등록한 질문 목록
-questions.listForMy = function(req, res, user) {
+router.listForMy = function(req, res, user) {
 	var count = req.query.count || 20;
 	var paging = req.query.next ? {'seq': {$lt: req.query.next}, 'questioner': user.seq} : {'questioner': user.seq};
 	Question.find(paging).sort({'seq': -1}).limit(count).exec(function(error, questions){
+		var filtered = filterList(questions);
 		commonResponse.ok(res,
 			{
-				next: (!questions || questions.length == 0) ? null : questions[questions.length-1].seq,
-				list: questions
+				next: (!filtered || filtered.length == 0) ? null : filtered[filtered.length-1].seq,
+				list: filtered
 			}
 		);
 	});
 }
 
-questions.post('/', function(req, res){
+
+
+router.post('/', function(req, res){
 	var accessKey = req.get('Access-Key');
 	if (!accessKey) {
 		commonResponse.noAccessKey(res);
@@ -107,13 +134,13 @@ questions.post('/', function(req, res){
 					commonResponse.error(res);
 					return;
 				}
-				commonResponse.ok(res, question);
+				commonResponse.ok(res, filterObject(question));
 			});
 		});
 	})
 });
 
-questions.delete('/:questionSeq', function(req, res) {
+router.delete('/:questionSeq', function(req, res) {
 	var accessKey = req.get('Access-Key');
 	if (!accessKey) {
 		commonResponse.noAccessKey(res);
@@ -144,7 +171,7 @@ questions.delete('/:questionSeq', function(req, res) {
 	});
 });
 
-questions.patch('/close/:questionSeq', function(req, res) {
+router.patch('/close/:questionSeq', function(req, res) {
 	var accessKey = req.get('Access-Key');
 	if (!accessKey) {
 		commonResponse.noAccessKey(res);
@@ -170,7 +197,7 @@ questions.patch('/close/:questionSeq', function(req, res) {
 });
 
 var SKIPPED = 0;
-questions.post('/skip/:questionSeq', function(req, res) {
+router.post('/skip/:questionSeq', function(req, res) {
 	var accessKey = req.get('Access-Key');
 	if (!accessKey) {
 		commonResponse.noAccessKey(res);
@@ -206,4 +233,4 @@ questions.post('/skip/:questionSeq', function(req, res) {
 	});
 });
 
-module.exports = questions;
+module.exports = router;
