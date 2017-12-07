@@ -47,13 +47,12 @@ questions.listForLoginUser = function(req, res, user, next) {
 	var query = req.query.next ? { 'seq': { $lt: req.query.next }, 'answerers': { $nin: [user.seq] } } : { 'answerers': { $nin: [user.seq] } };
 	Question.find(query).sort({'seq': -1}).limit(count)
 	.then(questions => {
-		console.log(questions);
-		var filtered = questions.map(question => {
-			console.log(question);
-			delete question.answerers;
-			return question;
-		});
-		commonResponse.ok(res, filtered);
+		commonResponse.ok(res,
+			{
+				next: (!questions || questions.length == 0) ? null : questions[questions.length-1].seq,
+				list: questions
+			}
+		);
 	})
 	.catch(next);
 }
