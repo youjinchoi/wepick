@@ -387,7 +387,7 @@
             ],
             "summary": "logout",
             "description": "",
-            "operationId": "login",
+            "operationId": "logout",
             "consumes": [
               "application/json"
             ],

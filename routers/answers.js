@@ -7,6 +7,7 @@ var commonResponse = require('../commons/commonResponse');
 var NoAccessKeyError = require('../errors/NoAccessKeyError');
 var NoUserError = require('../errors/NoUserError');
 var messages = require('../commons/messages');
+var pushSender = require('../commons/pushSender');
 
 
 answers.post('/', function(req, res, next){
@@ -50,9 +51,22 @@ answers.post('/', function(req, res, next){
 	})
 	.then(question => {
 		if (question.answerCount == question.maxAnswerCount) {
-			 return question.update({ isClosed: true }).then(() => commonResponse.ok(res));
+			question.update({ isClosed: true }).then(() => {
+				return User.findOne({'seq': question.questioner});
+			});
 		} else {
-			return commonResponse.ok(res);
+			return User.findOne({'seq': question.questioner});
+		}
+	})
+	.then(user => {
+		if (user && user.pushToken) {
+			pushSender.sendMessage(user.pushToken)
+			.then(result => {
+				console.log(result);
+				commonResponse.ok(res);
+			})
+		} else {
+			commonResponse.ok(res);
 		}
 	})
 	.catch(next);
