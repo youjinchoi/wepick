@@ -44,7 +44,7 @@ questions.listForGuestUser = function(req, res) {
 // 내가 등록하거나 답변한 질문을 제외한 진행중인 질문 목록(로그인시)
 questions.listForLoginUser = function(req, res, user, next) {
 	var count = req.query.count || 20;
-	var query = req.query.next ? { 'seq': { $lt: req.query.next }, 'answerers': { $nin: [user.seq] } } : { 'answerers': { $nin: [user.seq] } };
+	var query = req.query.next ? { 'seq': { $lt: req.query.next }, 'questioner' : { $ne: user.seq }, 'answerers': { $nin: [user.seq] } } : { 'questioner' : { $ne: user.seq }, 'answerers': { $nin: [user.seq] } };
 	Question.find(query).sort({'seq': -1}).limit(count)
 	.then(questions => {
 		commonResponse.ok(res,
