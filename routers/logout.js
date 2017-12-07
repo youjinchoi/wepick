@@ -6,6 +6,8 @@ var Answer = require('../models/answer');
 var commonResponse = require('../commons/commonResponse');
 var NoAccessKeyError = require('../errors/NoAccessKeyError');
 var NoUserError = require('../errors/NoUserError');
+var messages = require('../commons/messages');
+
 
 var GUEST = 1;
 var MEMBER = 2;
@@ -13,12 +15,12 @@ var MEMBER = 2;
 router.post('/', function(req, res, next) {
 	var accessKey = req.get('Access-Key');
 	if (!accessKey) {
-		throw NoAccessKeyError();
+		throw new NoAccessKeyError(messages.NO_ACCESS_KEY);
 	}
-	User.findOne({'email': body.email})
+	User.findOne({'accessKey': accessKey})
 	.then(user => {
 		if (!user) {
-			throw NoUserError();
+			throw new NoUserError(messages.NO_USER);
 		}
 		
 		// 일반 유저 로그아웃시 푸시 토큰 삭제

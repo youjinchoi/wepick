@@ -346,29 +346,7 @@
             ],
             "parameters": [],
             "responses": {}
-          },
-          "delete": {
-              "tags": [
-                "guest"
-              ],
-              "summary": "게스트 회원 탈퇴(회원정보 및 등록한 질문 삭제)",
-              "description": "",
-              "consumes": [
-                "application/json"
-              ],
-              "produces": [
-                "application/json"
-              ],
-              "parameters": [
-            	  {
-          	        "in": "header",
-          	        "name": "Access-Key",
-          	        "description": "accessKey",
-          	        "required": true
-          	      }
-              ],
-              "responses": {}
-            }
+          }
       },
     "/login": {
         "post": {
@@ -402,6 +380,35 @@
           }
         }
       },
+      "/logout": {
+          "post": {
+            "tags": [
+              "logout"
+            ],
+            "summary": "logout",
+            "description": "",
+            "operationId": "login",
+            "consumes": [
+              "application/json"
+            ],
+            "produces": [
+              "application/json"
+            ],
+            "parameters": [
+              {
+                "in": "header",
+                "name": "Access-Key",
+                "description": "accessKey",
+                "required": true
+              }
+            ],
+            "responses": {
+              "404": {
+                "description": "user does not exist."
+              }
+            }
+          }
+        },  
     "/verifications": {
       "post": {
         "tags": [

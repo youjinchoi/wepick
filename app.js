@@ -19,6 +19,7 @@ app.use('/answers', require('./routers/answers'));
 app.use('/members', require('./routers/members'));
 app.use('/guests', require('./routers/guests'));
 app.use('/login', require('./routers/login'));
+app.use('/logout', require('./routers/logout'));
 app.use('/verifications', require('./routers/verifications'));
 app.use('/pushes', require('./routers/pushes'));
 
