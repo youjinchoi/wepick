@@ -1,7 +1,7 @@
 var apn = require('apn');
 var adhocPushOptions = {
 	token: {
-		key: "WePick_Push.p8",
+		key: "/root/wepick/WePick_Push.p8",
 		keyId: "BW3ENMPXLE",
 		teamId: "DZWKTL8AW8"
 	},
@@ -10,7 +10,7 @@ var adhocPushOptions = {
 
 var productionPushOptions = {
 	token: {
-		key: "WePick_Push.p8",
+		key: "/root/wepick/WePick_Push.p8",
 		keyId: "BW3ENMPXLE",
 		teamId: "DZWKTL8AW8"
 	},
