@@ -6,7 +6,7 @@ var Answer = require('../models/answer');
 var getNextSeq = require('../autoIncrement');
 var commonResponse = require('../commons/commonResponse');
 
-questions.get('/', function(req, res) {
+questions.get('/', function(req, res, next) {
 	var accessKey = req.get('Access-Key');
 	if (req.query.type == 'guest' || !accessKey) {
 		questions.listForGuestUser(req, res);
@@ -14,14 +14,14 @@ questions.get('/', function(req, res) {
 	}
 	User.findOne({'accessKey': accessKey}, function(error, user) {
 		if (error || !user) {
-			questions.listForGuestUser(req, res);
+			questions.listForGuestUser(req, res, next);
 			return;
 		}
 		if (req.query.type == 'my') {
-			questions.listForMy(req, res, user);
+			questions.listForMy(req, res, user, next);
 			return;
 		} else {
-			questions.listForLoginUser(req, res, user);
+			questions.listForLoginUser(req, res, user, next);
 			return;
 		}
 	});
@@ -42,25 +42,20 @@ questions.listForGuestUser = function(req, res) {
 }
 
 // 내가 등록하거나 답변한 질문을 제외한 진행중인 질문 목록(로그인시)
-questions.listForLoginUser = function(req, res, user) {
+questions.listForLoginUser = function(req, res, user, next) {
 	var count = req.query.count || 20;
-	var pagingForAnswer = req.query.next ? {'question': {$lt: req.query.next}, 'answerer': user.seq} : {'answerer': user.seq};
-	Answer.find(pagingForAnswer).sort({'question': -1}).limit(count).exec(function(error, answers) {
-		//console.log(answers);
-		var answeredQuestions = (answers || []).map((answer) => {
-			return answer.question;
+	var query = req.query.next ? { 'seq': { $lt: req.query.next }, 'answerers': { $nin: [user.seq] } } : { 'answerers': { $nin: [user.seq] } };
+	Question.find(query).sort({'seq': -1}).limit(count)
+	.then(questions => {
+		console.log(questions);
+		var filtered = questions.map(question => {
+			console.log(question);
+			delete question.answerers;
+			return question;
 		});
-		//console.log('answeredQuestions', answeredQuestions);
-		var pagingForQuestion = req.query.next ? {'seq': {$lt: req.query.next, $nin: answeredQuestions}, 'questioner': {$ne: user.seq}, 'isClosed': false} : {'seq': {$nin: answeredQuestions}, 'questioner': {$ne: user.seq}, 'isClosed': false};
-		Question.find(pagingForQuestion).sort({'seq': -1}).limit(count).exec(function(error, questions){
-			commonResponse.ok(res,
-				{
-					next: (!questions || questions.length == 0) ? null : questions[questions.length-1].seq,
-					list: questions
-				}
-			);
-		});
-	});
+		commonResponse.ok(res, filtered);
+	})
+	.catch(next);
 }
 
 // 내가 등록한 질문 목록

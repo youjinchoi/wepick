@@ -468,6 +468,31 @@
         }
       }
     },
+    "/pushes/{userSeq}": {
+      "post": {
+        "tags": [
+          "push"
+        ],
+        "summary": "Send push to user",
+        "description": "",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "userSeq",
+            "description": "userSeq",
+            "required": true
+          }
+        ],
+        "responses": {
+        }
+      }
+    },
     "/pushes/tokens": {
         "put": {
           "tags": [

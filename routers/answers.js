@@ -19,29 +19,38 @@ answers.post('/', function(req, res, next){
 		if (!user) {
 			throw new NoUserError(messages.NO_USER);
 		}
-		return Question.findOne({'seq': req.body.question}).then(question => {return {question:question, user:user}});
+		return Question.findOne({'seq': req.body.question}).then(question => {
+			return { question: question, user: user }
+		});
 	})
 	.then(data => {
+		data.question.answerers.map(answerer => {
+			if (answerer == data.user.seq) {
+				throw Error(messages.ALREADY_ANSWERED);
+			}
+		})
 		var answer = new Answer();
 		answer.question = data.question.seq;
 		answer.questioner = data.question.questioner;
 		answer.answerer = data.user.seq;
 		answer.selection = req.body.selection;
-		return answer.save().then(() => answer);
+		return answer.save().then(() => {
+			return { answer: answer, user: data.user }
+		});
 	})
-	.then(answer => {
+	.then(data => {
 		var increase = {};
 		increase["answerCount"] = 1;
-		increase["options." + answer.selection + ".count"] = 1;
+		increase["options." + data.answer.selection + ".count"] = 1;
 		return Question.findOneAndUpdate(
 					{ seq: req.body.question },
-					{ $inc: increase },
+					{ $inc: increase, $push: { answerers: data.user.seq } },
 					{ new: true }
 				);
 	})
 	.then(question => {
 		if (question.answerCount == question.maxAnswerCount) {
-			 return question.update({isClosed: true}).then(() => commonResponse.ok(res));
+			 return question.update({ isClosed: true }).then(() => commonResponse.ok(res));
 		} else {
 			return commonResponse.ok(res);
 		}

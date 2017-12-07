@@ -2,12 +2,12 @@ var messages = require('./messages');
 
 var commonResponse = {};
 
-commonResponse.noAccessKey = function(res) {
+commonResponse.noAccessKey = function(res, message) {
     return res.status(401).json({
         status: "ERROR",
         result: {
         	code: 1001,
-        	message: messages.NO_ACCESS_KEY
+        	message: message || messages.NO_ACCESS_KEY
         }
     })
 }
@@ -17,7 +17,7 @@ commonResponse.noUser = function(res, message) {
         status: "ERROR",
         result: {
         	code: 1002,
-        	message: messages.NO_USER
+        	message: message || messages.NO_USER
         }
     });
 }
@@ -38,7 +38,10 @@ commonResponse.ok = function(res, result) {
 commonResponse.error = function(res, message) {
     return res.status(500).json({
         status: "ERROR",
-        result: message || "internal server error"
+        result: {
+            code: 9001,
+            message: message || messages.SERVER_ERROR
+        }
     })
 }
 

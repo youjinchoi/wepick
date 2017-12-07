@@ -7,6 +7,11 @@ var commonResponse = require('./commons/commonResponse');
 var NoAccessKeyError = require('./errors/NoAccessKeyError');
 var NoUserError = require('./errors/NoUserError');
 var app = express();
+
+process.on('uncaughtException', function (error) {
+	console.error(error);
+});
+
 app.use(bodyParser.json());
 
 app.use('/questions', require('./routers/questions'));
@@ -23,14 +28,14 @@ app.use(function(req, res){
     res.redirect('/api-docs');
 });
 
-app.use(function (err, req, res, next) {
-	console.error(err);
-	if (err instanceof NoAccessKeyError) {
-		commonResponse.noAccessKey(res);
-	} else if (err instanceof NoUserError) {
-		commonResponse.noUser(res);
+app.use(function (error, req, res) {
+	console.error(error);
+	if (error instanceof NoAccessKeyError) {
+		commonResponse.noAccessKey(res, error.message);
+	} else if (error instanceof NoUserError) {
+		commonResponse.noUser(res, error.message);
 	} else {
-		commonResponse.error(res);
+		commonResponse.error(res, error.message);
 	}
 })
 
