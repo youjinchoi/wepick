@@ -1,9 +1,8 @@
 var mongoose = require('mongoose');
+var vars = require('../config/vars');
+
 mongoose.Promise = global.Promise;
-//for dev
-//mongoose.connect('mongodb://10.106.144.145:27017/test');
-//for real
-mongoose.connect('mongodb://localhost:27017/test');
+mongoose.connect(vars.db.address);
 var db = mongoose.connection;
 db.on('error', function(){
     console.log('MongoDB Connection Failed!');

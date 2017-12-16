@@ -3,5 +3,4 @@ node_modules/
 .project
 package-lock.json
 .settings/
-config.js
-db.js
+config/

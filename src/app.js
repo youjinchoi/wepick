@@ -38,8 +38,11 @@ app.use(function (error, req, res) {
 	} else {
 		commonResponse.error(res, error.message);
 	}
-})
+});
 
-app.listen(8080, function () { 
-    console.log('Wepick app listening on port 8080!');
+const args = require('yargs').argv;
+const port = args.port;
+
+app.listen(port, function () { 
+    console.log('Wepick app listening on port ' + port + '!');
 });

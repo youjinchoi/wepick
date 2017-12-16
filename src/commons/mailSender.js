@@ -1,8 +1,8 @@
 var nodemailer = require('nodemailer');
-var config = require('../config');
+var vars = require('../../config/vars');
 var mailSender = {};
 
-var transporter = nodemailer.createTransport(config.smptTransport);
+var transporter = nodemailer.createTransport(vars.smptTransport);
 
 mailSender.sendVerificationCode = function(address, code, callback) {
 	var mailOptions = mailSender.getVerificationMailOptions(address, code);
@@ -13,7 +13,7 @@ mailSender.sendVerificationCode = function(address, code, callback) {
 
 mailSender.getVerificationMailOptions = function(address, code) {
 	return {
-		from: config.email.address,
+		from: vars.email.address,
 		to: address,
 		subject: 'Verification Code from Wepick!',
 		text: 'Verification Code : ' + code
