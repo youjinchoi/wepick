@@ -25,8 +25,15 @@ router.post('/', function(req, res, next) {
 			commonResponse.error(res, "invalid password.");
 			return;
 		}
+		var newAccessKey = crypto.createHash('sha256').update(user.email + new Date().getTime().toString()).digest('hex');
+		user.accessKey = newAccessKey;
+		return user.save();
+	}).then(user => {
+		if (!user) {
+			commonResponse.error(res);
+			return;
+		}
 		commonResponse.ok(res, {accessKey: user.accessKey});
-		return;
 	})
 	.catch(next);
 });
