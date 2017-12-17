@@ -6,6 +6,7 @@ var db = require('./db');
 var commonResponse = require('./commons/commonResponse');
 var NoAccessKeyError = require('./errors/NoAccessKeyError');
 var NoUserError = require('./errors/NoUserError');
+var AuthenticationError = require('./errors/AuthenticationError');
 var app = express();
 
 process.on('uncaughtException', function (error) {
@@ -29,12 +30,14 @@ app.use(function(req, res){
     res.redirect('/api-docs');
 });
 
-app.use(function (error, req, res) {
+app.use(function (error, req, res, next) {
 	console.error(error);
 	if (error instanceof NoAccessKeyError) {
 		commonResponse.noAccessKey(res, error.message);
 	} else if (error instanceof NoUserError) {
 		commonResponse.noUser(res, error.message);
+	} else if (error instanceof AuthenticationError) {
+		commonResponse.authentication(res, error.message);
 	} else {
 		commonResponse.error(res, error.message);
 	}

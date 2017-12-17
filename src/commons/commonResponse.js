@@ -22,6 +22,16 @@ commonResponse.noUser = function(res, message) {
     });
 }
 
+commonResponse.authentication = function(res, message) {
+    return res.status(401).json({
+        status: "ERROR",
+        result: {
+            code: 1003,
+            message: message || messages.AUTHENTICATION
+        }
+    });
+}
+
 commonResponse.ok = function(res, result) {
     if (result) {
         return res.json({

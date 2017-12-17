@@ -3,6 +3,9 @@ var router = express.Router();
 var User = require('../models/user');
 var crypto = require('crypto');
 var commonResponse = require('../commons/commonResponse');
+var NoUserError = require('../errors/NoUserError');
+var AuthenticationError = require('../errors/AuthenticationError');
+var messages = require('../commons/messages');
 
 router.post('/', function(req, res, next) {
 	var body = req.body;
@@ -17,21 +20,18 @@ router.post('/', function(req, res, next) {
 	User.findOne({'email': body.email})
 	.then(user => {
 		if (!user) {
-			commonResponse.noUser(res);
-			return;
+			throw new NoUserError(messages.NO_USER);
 		}
 		var password = crypto.createHash('sha256').update(body.password).digest('hex');
 		if (user.password != password) {
-			commonResponse.error(res, "invalid password.");
-			return;
+			throw new AuthenticationError(messages.INVALID_PASSWORD);
 		}
 		var newAccessKey = crypto.createHash('sha256').update(user.email + new Date().getTime().toString()).digest('hex');
 		user.accessKey = newAccessKey;
 		return user.save();
 	}).then(user => {
 		if (!user) {
-			commonResponse.error(res);
-			return;
+			throw new Error();
 		}
 		commonResponse.ok(res, {accessKey: user.accessKey});
 	})
