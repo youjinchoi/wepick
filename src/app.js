@@ -7,6 +7,7 @@ var commonResponse = require('./commons/commonResponse');
 var NoAccessKeyError = require('./errors/NoAccessKeyError');
 var NoUserError = require('./errors/NoUserError');
 var AuthenticationError = require('./errors/AuthenticationError');
+var DuplicationError = require('./errors/DuplicationError');
 var app = express();
 
 process.on('uncaughtException', function (error) {
@@ -38,6 +39,8 @@ app.use(function (error, req, res, next) {
 		commonResponse.noUser(res, error.message);
 	} else if (error instanceof AuthenticationError) {
 		commonResponse.authentication(res, error.message);
+	} else if (error instanceof DuplicationError) {
+		commonResponse.duplication(res, error.message);
 	} else {
 		commonResponse.error(res, error.message);
 	}

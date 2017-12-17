@@ -32,6 +32,16 @@ commonResponse.authentication = function(res, message) {
     });
 }
 
+commonResponse.duplication = function(res, message) {
+    return res.status(401).json({
+        status: "ERROR",
+        result: {
+            code: 1004,
+            message: message || messages.DUPLICATION
+        }
+    });
+}
+
 commonResponse.ok = function(res, result) {
     if (result) {
         return res.json({

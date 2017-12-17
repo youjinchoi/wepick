@@ -54,7 +54,6 @@ router.listForGuestUser = function(req, res) {
 	var paging = req.query.next ? {'seq': {$lt: req.query.next}, 'isClosed': false} : {'isClosed': false};
 	Question.find(paging).sort({'seq': -1}).limit(count).exec(function(error, questions){
 		var filtered = filterList(questions);
-		console.log(filtered);
 		commonResponse.ok(res,
 			{
 				next: (!filtered || filtered.length == 0) ? null : filtered[filtered.length-1].seq,

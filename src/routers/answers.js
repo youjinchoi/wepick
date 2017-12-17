@@ -52,15 +52,21 @@ answers.post('/', function(req, res, next){
 	.then(question => {
 		if (question.answerCount == question.maxAnswerCount) {
 			question.update({ isClosed: true }).then(() => {
-				return User.findOne({'seq': question.questioner});
+				return User.findOne({'seq': question.questioner}).then(user => {
+					return {question: question, questioner: user}
+				});
 			});
 		} else {
-			return User.findOne({'seq': question.questioner});
+			return User.findOne({'seq': question.questioner}).then(user => {
+				return {question: question, questioner: user}
+			});
 		}
 	})
-	.then(user => {
-		if (user && user.pushToken) {
-			pushSender.sendMessage(user.pushToken)
+	.then(data => {
+		var questioner = data.questioner;
+		if (questioner && questioner.pushToken) {
+			var question = data.question;
+			pushSender.sendAnswerToQuestioner(questioner.pushToken, question.contents, question.options[req.body.selection].value, question.answerCount)
 			.then(result => {
 				console.log(result);
 				commonResponse.ok(res);

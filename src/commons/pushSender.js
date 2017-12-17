@@ -13,4 +13,13 @@ pushSender.sendMessage = function(token) {
 	return apnProvider.send(note, token);
 }
 
+pushSender.sendAnswerToQuestioner = function(token, questionContents, answerContents, answerCount) {
+	console.log('pushInfo', token, questionContents, answerContents, answerCount);
+	note.alert = {
+		'loc-key': 'push_answer',
+		'loc-args': [questionContents, answerContents, answerCount.toString()]
+	};
+	return apnProvider.send(note, token);
+}
+
 module.exports = pushSender;

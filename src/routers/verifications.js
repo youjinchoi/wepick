@@ -6,46 +6,34 @@ var getNextSeq = require('../autoIncrement');
 var commonResponse = require('../commons/commonResponse');
 var util = require('../commons/util');
 var mailSender = require('../commons/mailSender');
+var DuplicationError = require('../errors/DuplicationError');
+var messages = require('../commons/messages');
 
 
-router.post('/', function(req, res) {
+router.post('/', function(req, res, next) {
 	var body = req.body;
-	User.findOne({'email': body.email}, function(error, user) {
-		if (error) {
-			commonResponse.error(res);
-			return;
-		}
+	User.findOne({'email': body.email})
+	.then(user => {
 		if (user) {
-			commonResponse.error(res, 'email already exists.');
-			return;
+			throw new DuplicationError(messages.DUPLICATE_EMAIL);
 		}
-		getNextSeq('verification').then(result => {
-			if (!result) {
-				commonResponse.error(res);
-				return;
-			}
-			var verification = new Verification();
-			verification.seq = result.seq;
-			verification.code = util.getRandomNumber(1000, 9999);
-			verification.save(function(error) {
-				if (error) {
-					commonResponse.error(res);
-					return;
-				}
-				mailSender.sendVerificationCode(body.email, verification.code, 
-					function(error, info) {
-						if (error) {
-							console.error(error);
-							commonResponse.error(res);
-							return;
-						}
-						console.debug(info);
-						commonResponse.ok(res, {verificationSeq: verification.seq});
-					}
-				)
-			})
+		return getNextSeq('verification');
+	})
+	.then(result => {
+		var verification = new Verification();
+		verification.seq = result.seq;
+		verification.code = util.getRandomNumber(1000, 9999);
+		return verification.save().then(() => verification);
+	})
+	.then(verification => {
+		return mailSender.sendVerificationCode(body.email, verification.code, 'ko').then(info => {
+			return {verification: verification, info: info};
 		});
 	})
+	.then(data => {
+		commonResponse.ok(res, {verificationSeq: data.verification.seq});
+	})
+	.catch(next);
 });
 	
 router.get('/:verificationSeq/:verificationCode', function(req, res) {
