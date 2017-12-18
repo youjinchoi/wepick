@@ -5,6 +5,7 @@ var Question = require('../models/question');
 var Answer = require('../models/answer');
 var getNextSeq = require('../autoIncrement');
 var commonResponse = require('../commons/commonResponse');
+var NoUserError = require('../errors/NoUserError');
 
 var filterObject = function(question) {
 	if (!question) {
@@ -137,6 +138,25 @@ router.post('/', function(req, res){
 			});
 		});
 	})
+});
+
+router.get('/:questionSeq', function(req, res, next) {
+	var accessKey = req.get('Access-Key');
+	if (!accessKey) {
+		commonResponse.noAccessKey(res);
+		return;
+	}
+	User.findOne({'accessKey': accessKey})
+	.then(user => {
+		if (!user) {
+			throw new NoUserError();
+		}
+		return Question.findOne({'seq': req.params.questionSeq});
+	})
+	.then(question => {
+		commonResponse.ok(res, filterObject(question));
+	})
+	.catch(next);
 });
 
 router.delete('/:questionSeq', function(req, res) {

@@ -107,6 +107,38 @@
       }
     },
     "/questions/{questionSeq}": {
+      "get": {
+    	  "tags": [
+            "question"
+    	  ],
+          "summary": "Get question by questionSeq",
+          "description": "",
+          "produces": [
+            "application/json"
+          ],
+          "parameters": [
+              {
+                "in": "path",
+                "name": "questionSeq",
+                "description": "questionSeq",
+                "required": true
+              },
+              {
+                "in": "header",
+                "name": "Access-Key",
+                "description": "user accessKey",
+                "required": true
+              }
+            ],
+            "responses": {
+              "200": {
+                "description": "ok"
+              },
+              "404": {
+                "description": "not found"
+              }
+            }
+      },
       "delete": {
         "tags": [
           "question"
