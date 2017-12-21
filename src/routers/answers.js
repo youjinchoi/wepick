@@ -66,7 +66,7 @@ answers.post('/', function(req, res, next){
 		var questioner = data.questioner;
 		if (questioner && questioner.pushToken) {
 			var question = data.question;
-			pushSender.sendAnswerToQuestioner(questioner.pushToken, question.contents, question.options[req.body.selection].value, question.answerCount)
+			pushSender.sendAnswerToQuestioner(questioner.pushToken, question.seq, question.contents, question.options[req.body.selection].value, question.answerCount)
 			.then(result => {
 				console.log(result);
 				commonResponse.ok(res);
