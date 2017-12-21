@@ -9,16 +9,13 @@ pushSender.sendMessage = function(token) {
 }
 
 pushSender.sendAnswerToQuestioner = function(token, questionSeq, questionContents, answerContents, answerCount) {
-	var note = new apn.Notification();
-	note.topic = 'com.Waak.WePick';
-	note.contentAvailable = 1;
-	note.alert = {
-		'loc-key': 'push_answer',
-		'loc-args': [questionContents, answerContents, answerCount.toString()]
-	};
-	note.payload = {'questionSeq': questionSeq};
-	console.log(note.alert['loc-args'], note.payload);
-	return apnProvider.send(note, token);
+	var noti = new apn.Notification();
+	noti.topic = 'com.Waak.WePick';
+	noti.contentAvailable = 1;
+	noti.setLocKey('push_answer');
+	noti.setLocArgs([questionContents.replace('\n', ' '), answerContents, answerCount.toString()]);
+	noti.payload = {'questionSeq': questionSeq};
+	return apnProvider.send(noti, token);
 }
 
 module.exports = pushSender;
