@@ -22,7 +22,7 @@
     }
   ],
   "schemes": [
-    "https"
+    "https", "http"
   ],
   "paths": {
     "/questions": {
@@ -278,6 +278,36 @@
         }
       }
     },
+    "/users/remove-history/{userSeq}": {
+      "delete": {
+        "tags": [
+          "user"
+        ],
+        "summary": "탈퇴 유저 히스토리 삭제",
+        "description": "",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+	        "in": "path",
+	        "name": "userSeq",
+	        "description": "user seq",
+	        "required": true
+	      },
+          {
+	        "in": "header",
+	        "name": "Server-Key",
+	        "description": "server key",
+	        "required": true
+	      }
+        ],
+        "responses": {}
+      }
+    },
     "/members": {
         "post": {
           "tags": [
@@ -507,12 +537,12 @@
         }
       }
     },
-    "/pushes/{userSeq}": {
+    "/pushes": {
       "post": {
         "tags": [
           "push"
         ],
-        "summary": "Send push to user",
+        "summary": "Send push to questioner",
         "description": "",
         "consumes": [
           "application/json"
@@ -522,11 +552,20 @@
         ],
         "parameters": [
           {
-            "in": "path",
-            "name": "userSeq",
-            "description": "userSeq",
-            "required": true
-          }
+            "in": "body",
+            "name": "pushInfo",
+            "description": "information for push",
+            "required": true,
+            "schema": {
+                "$ref": "#/definitions/PushInfo"
+              }
+          },
+          {
+  	        "in": "header",
+  	        "name": "Server-Key",
+  	        "description": "server key",
+  	        "required": true
+  	      }
         ],
         "responses": {
         }
@@ -647,6 +686,22 @@
           }
         }
       },
+    "PushInfo": {
+      "type": "object",
+      "required": [
+          "questionSeq", "selection"
+        ],
+      "properties": {
+        "questionSeq": {
+          "type": "number",
+          "example": 1
+        },
+        "selection": {
+	    	"type": "number",
+	    	"example": 0
+        }
+      }
+    },
     "ApiResponse": {
       "type": "object",
       "properties": {

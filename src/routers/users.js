@@ -4,12 +4,13 @@ var User = require('../models/user');
 var Question = require('../models/question');
 var Answer = require('../models/answer');
 var commonResponse = require('../commons/commonResponse');
+var InvalidParameterError = require('../errors/InvalidParameterError');
 
 router.delete('/remove-history/:userSeq', function(req, res, next) {
+	console.log('remove user history', req.params.userSeq);
 	var serverKey = req.get('Server-Key');
 	if (!serverKey) {
-		commonResponse.error(res);
-		return;
+		throw new InvalidParameterError('Server-Key is required.');
 	}
 	
 	var userSeq = req.params.userSeq;
