@@ -18,6 +18,7 @@ app.use(bodyParser.json());
 
 app.use('/questions', require('./routers/questions'));
 app.use('/answers', require('./routers/answers'));
+app.use('/users', require('./routers/users'));
 app.use('/members', require('./routers/members'));
 app.use('/guests', require('./routers/guests'));
 app.use('/login', require('./routers/login'));
@@ -47,7 +48,7 @@ app.use(function (error, req, res, next) {
 });
 
 const args = require('yargs').argv;
-const port = args.port;
+const port = args.port || 8080;
 
 app.listen(port, function () { 
     console.log('Wepick app listening on port ' + port + '!');
