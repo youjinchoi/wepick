@@ -37,7 +37,7 @@ router.post('/', function(req, res, next) {
 		}
 		
 		var question = data.question;
-		pushSender.sendAnswerToQuestioner(user.pushToken, question.seq, question.contents, question.options[selection].value, question.answerCount)
+		pushSender.sendAnswerToQuestioner(user.pushToken, question.seq, question.contents.replace(/\n/gi," "), question.options[selection].value, question.answerCount)
 		.then(result => {
 			console.log(result);
 			commonResponse.ok(res);
