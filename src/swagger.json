@@ -22,7 +22,7 @@
     }
   ],
   "schemes": [
-    "http", "https"
+    "https"
   ],
   "paths": {
     "/questions": {
