@@ -6,8 +6,12 @@ var Answer = require('../models/answer');
 var commonResponse = require('../commons/commonResponse');
 var NoAccessKeyError = require('../errors/NoAccessKeyError');
 var NoUserError = require('../errors/NoUserError');
+var NotFoundError = require('../errors/NotFoundError');
+var InvalidParameterError = require('../errors/InvalidParameterError');
 var messages = require('../commons/messages');
 var pushSender = require('../commons/pushSender');
+var axios = require('axios');
+var vars = require('../../config/vars');
 
 
 answers.post('/', function(req, res, next){
@@ -21,6 +25,9 @@ answers.post('/', function(req, res, next){
 			throw new NoUserError(messages.NO_USER);
 		}
 		return Question.findOne({'seq': req.body.question}).then(question => {
+			if (!question) {
+				throw new NotFoundError('Question not found.');
+			}
 			return { question: question, user: user }
 		});
 	})
@@ -30,50 +37,47 @@ answers.post('/', function(req, res, next){
 				throw Error(messages.ALREADY_ANSWERED);
 			}
 		})
+		
+		if (!data.question.options[req.body.selection]) {
+			throw InvalidParameterError(messages.INVALID_SELECTION);
+		}
 		var answer = new Answer();
 		answer.question = data.question.seq;
 		answer.questioner = data.question.questioner;
 		answer.answerer = data.user.seq;
 		answer.selection = req.body.selection;
 		return answer.save().then(() => {
-			return { answer: answer, user: data.user }
+			return { answer: answer, user: data.user, question: data.question }
 		});
 	})
 	.then(data => {
+		var question = data.question;
 		var increase = {};
 		increase["answerCount"] = 1;
 		increase["options." + data.answer.selection + ".count"] = 1;
-		return Question.findOneAndUpdate(
-					{ seq: req.body.question },
-					{ $inc: increase, $push: { answerers: data.user.seq } },
-					{ new: true }
-				);
+		var updateInfo = {
+				$inc: increase,
+				$push: { answerers: data.user.seq }
+			};
+		if (question.maxAnswerCount - question.answerCount <= 1) {
+			updateInfo.isClosed = true;
+		}
+		return Question.findOneAndUpdate({seq: question.seq}, updateInfo, {new: true}).then(question => question);
 	})
 	.then(question => {
-		if (question.answerCount == question.maxAnswerCount) {
-			question.update({ isClosed: true }).then(() => {
-				return User.findOne({'seq': question.questioner}).then(user => {
-					return {question: question, questioner: user}
-				});
-			});
-		} else {
-			return User.findOne({'seq': question.questioner}).then(user => {
-				return {question: question, questioner: user}
-			});
-		}
-	})
-	.then(data => {
-		var questioner = data.questioner;
-		if (questioner && questioner.pushToken) {
-			var question = data.question;
-			pushSender.sendAnswerToQuestioner(questioner.pushToken, question.seq, question.contents, question.options[req.body.selection].value, question.answerCount)
-			.then(result => {
-				console.log(result);
-				commonResponse.ok(res);
-			})
-		} else {
-			commonResponse.ok(res);
-		}
+		axios.post(vars.api + '/pushes', {
+		    questionSeq: question.seq,
+		    selection: req.body.selection
+		}, {
+			headers: {'Server-Key': vars.serverKey}
+		})
+		.then(function (res) {
+		    // do nothing
+		})
+		.catch(function (error) {
+		    // do nothing
+		});
+		commonResponse.ok(res);
 	})
 	.catch(next);
 });
