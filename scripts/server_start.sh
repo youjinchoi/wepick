@@ -1,4 +1,5 @@
 #! /bin/bash
+REPO_DIR=~/repo
 #PHASE=local
 #PHASE=dev
 PHASE=real
@@ -9,4 +10,4 @@ else
     PORT=8080
 fi
 
-nohup node ../src/app --port=$PORT --phase=$PHASE >> ~/logs/node_$PORT.log &
+nohup node $REPO_DIR/src/app --port=$PORT --phase=$PHASE >> ~/logs/node/node_$PORT.log &

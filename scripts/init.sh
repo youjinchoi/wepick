@@ -24,10 +24,13 @@ then
 fi
 sudo cp $REPO_DIR/nginx/nginx.conf $NGINX_CONF_DIR
 sudo cp $REPO_DIR/nginx/wepick.*.conf $NGINX_CONF_DIR/conf.d
-sudo ln -s $NGINX_CONF/conf.d/wepick.conf $NGINX_CONF/conf.d/wepick.8080.conf
+sudo ln -s $NGINX_CONF_DIR/conf.d/wepick.conf $NGINX_CONF_DIR/conf.d/wepick.8080.conf
 
 # create symbolic link for logs
-sudo ln -s $LOGS_DIR/nginx $NGINX_LOG_DIR
+#sudo ln -s $NGINX_LOG_DIR $LOGS_DIR/nginx
 
 # create log directory for node
 mkdir $LOGS_DIR/node
+
+# create node port file
+echo 8080 > ~/.current_node_port

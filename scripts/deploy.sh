@@ -22,7 +22,7 @@ OLD_NODE_PORT=$CURRENT_NODE_PORT
 
 $SCRIPTS_DIR/server_start.sh $NEW_NODE_PORT
 sudo rm $NGINX_CONF_DIR/conf.d/wepick.conf
-sudo ln -s $NGINX_CONF_DIR/conf.d wepick.conf $NGINX_CONF/conf.d/wepick.$NEW_NODE_PORT.conf
+sudo ln -s $NGINX_CONF_DIR/conf.d wepick.conf $NGINX_CONF_DIR/conf.d/wepick.$NEW_NODE_PORT.conf
 sudo systemctl reload nginx
 echo $NEW_NODE_PORT > ~/$NODE_PORT_FILE
 
