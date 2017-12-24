@@ -3,5 +3,10 @@
 #PHASE=dev
 PHASE=real
 
-nohup node ../src/app --port=8080 --phase=$PHASE >> ~/logs/node_8080.log &
-nohup node ../src/app --port=8081 --phase=$PHASE >> ~/logs/node_8081.log &
+if [[ "$1" != "" ]]; then
+    PORT=$1
+else
+    PORT=8080
+fi
+
+nohup node ../src/app --port=$PORT --phase=$PHASE >> ~/logs/node_$PORT.log &
