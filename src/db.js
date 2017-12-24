@@ -8,6 +8,7 @@ db.on('error', function(){
     console.log('MongoDB Connection Failed!');
 });
 db.once('open', function() {
+	global.dbConnection = 'OK';
     console.log('MongoDB Connected!');
 });
 

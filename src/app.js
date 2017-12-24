@@ -16,6 +16,10 @@ process.on('uncaughtException', function (error) {
 
 app.use(bodyParser.json());
 
+app.get('/connection-test', function (req, res) {
+	res.status(200).send(global.dbConnection);
+});
+
 app.use('/questions', require('./routers/questions'));
 app.use('/answers', require('./routers/answers'));
 app.use('/users', require('./routers/users'));
