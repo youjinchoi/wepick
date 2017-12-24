@@ -27,6 +27,11 @@ fi
 OLD_NODE_PORT=$CURRENT_NODE_PORT
 
 $SCRIPTS_DIR/server_start.sh $NEW_NODE_PORT
+if [ "$?" != '0' ]
+then
+        echo 'Deploy error.'
+        exit 1
+fi
 echo "Node start end."
 
 sleep 3
