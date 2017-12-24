@@ -8,6 +8,12 @@ NODE_PORT_FILE=.current_node_port
 
 cd $REPO_DIR;
 git fetch;git pull;
+
+# copy script files from repo
+cp $REPO_DIR/scripts/* $SCRIPTS_DIR
+chmod 755 $SCRIPTS_DIR/*
+
+# build node app and start
 npm install;
 
 CURRENT_NODE_PORT=`cat ~/$NODE_PORT_FILE`

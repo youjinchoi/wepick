@@ -1,4 +1,5 @@
 #! /bin/bash
+PHASE=$1
 REPO_DIR=~/repo
 LOGS_DIR=~/logs
 SCRIPTS_DIR=~/scripts
@@ -32,5 +33,6 @@ sudo ln -s $NGINX_CONF_DIR/conf.d/wepick.conf $NGINX_CONF_DIR/conf.d/wepick.8080
 # create log directory for node
 mkdir $LOGS_DIR/node
 
-# create node port file
+# create config file
 echo 8080 > ~/.current_node_port
+echo $PHASE > ~/.phase

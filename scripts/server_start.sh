@@ -1,8 +1,6 @@
 #! /bin/bash
 REPO_DIR=~/repo
-#PHASE=local
-#PHASE=dev
-PHASE=real
+PHASE=`cat ~/.phase`
 
 if [[ "$1" != "" ]]; then
     PORT=$1
