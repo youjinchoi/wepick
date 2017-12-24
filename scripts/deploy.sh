@@ -4,7 +4,7 @@ LOGS_DIR=~/logs
 SCRIPTS_DIR=~/scripts
 NGINX_CONF_DIR=/etc/nginx
 NGINX_LOG_DIR=/var/log/nginx
-NODE_PORT_FILE=~/.current_node_port
+NODE_PORT_FILE=.current_node_port
 
 cd $REPO_DIR;
 git fetch;git pull;
@@ -22,7 +22,7 @@ OLD_NODE_PORT=$CURRENT_NODE_PORT
 
 $SCRIPTS_DIR/server_start.sh $NEW_NODE_PORT
 sudo rm $NGINX_CONF_DIR/conf.d/wepick.conf
-sudo ln -s $NGINX_CONF_DIR/conf.d wepick.conf $NGINX_CONF_DIR/conf.d/wepick.$NEW_NODE_PORT.conf
+sudo ln -s $NGINX_CONF_DIR/conf.d/wepick.$NEW_NODE_PORT.conf $NGINX_CONF_DIR/conf.d/wepick.conf
 sudo systemctl reload nginx
 echo $NEW_NODE_PORT > ~/$NODE_PORT_FILE
 
