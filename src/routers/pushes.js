@@ -77,7 +77,7 @@ router.post('/', function(req, res, next) {
 				questionSeq:question.seq,
 				questionContents:question.contents.replace(/\n/gi," "),
 				answerContents: question.options[selection].value,
-				answerCount: question.answerCount,
+				answerCount: question.options[selection].count,
 				topAnswerCount: topAnswer.count,
 				topAnswerContents: topAnswer.contents
 			}, function() {
