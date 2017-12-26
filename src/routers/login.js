@@ -27,8 +27,7 @@ router.post('/', function(req, res, next) {
 			throw new AuthenticationError(messages.INVALID_PASSWORD);
 		}
 		var newAccessKey = crypto.createHash('sha256').update(user.email + new Date().getTime().toString()).digest('hex');
-		user.accessKey = newAccessKey;
-		return user.save();
+		return User.findByIdAndUpdate(user.id, {$set: {'accessKey': newAccessKey}}, {new: true});
 	}).then(user => {
 		if (!user) {
 			throw new Error();
