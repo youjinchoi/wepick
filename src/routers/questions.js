@@ -67,7 +67,7 @@ router.listForGuestUser = function(req, res) {
 // 내가 등록하거나 답변한 질문을 제외한 진행중인 질문 목록(로그인시)
 router.listForLoginUser = function(req, res, user, next) {
 	var count = req.query.count || 20;
-	var query = req.query.next ? { 'seq': { $lt: req.query.next }, 'questioner' : { $ne: user.seq }, 'answerers': { $nin: [user.seq] } } : { 'questioner' : { $ne: user.seq }, 'answerers': { $nin: [user.seq] } };
+	var query = req.query.next ? { 'seq': { $lt: req.query.next }, 'isClosed': false, 'questioner' : { $ne: user.seq }, 'answerers': { $nin: [user.seq] } } : { 'isClosed': false, 'questioner' : { $ne: user.seq }, 'answerers': { $nin: [user.seq] } };
 	Question.find(query).sort({'seq': -1}).limit(count)
 	.then(questions => {
 		var filtered = filterList(questions);
