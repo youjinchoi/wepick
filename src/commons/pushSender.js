@@ -15,14 +15,29 @@ pushSender.sendMessage = function(token) {
 	return productionProvider.send(note, token);
 }
 
-pushSender.sendAnswerToQuestioner = function(token, message, fnSuccess, fnFail) {
+pushSender.sendAnswerToQuestioner = function(token, args, fnSuccess, fnFail) {
 	var noti = new apn.Notification();
 	noti.topic = 'com.Waak.WePick';
 	noti.contentAvailable = 1;
 	noti.setLocKey('push_answer');
-	noti.setLocArgs([message.questionContents, message.answerContents, message.answerCount.toString()]);
-	noti.payload = {'questionSeq': message.questionSeq};
+	noti.setLocArgs([args.questionContents, args.answerContents, args.answerCount.toString(), args.topAnswerContents, args.topAnswerCount.toString()]);
+	noti.payload = {'questionSeq': args.questionSeq};
 
+	pushSender.send(noti, token, fnSuccess, fnFail);
+}
+
+pushSender.sendFinalAnswerToQuestioner = function(token, args, fnSuccess, fnFail) {
+	var noti = new apn.Notification();
+	noti.topic = 'com.Waak.WePick';
+	noti.contentAvailable = 1;
+	noti.setLocKey('push_final_answer');
+	noti.setLocArgs([args.questionContents, args.maxAnswerCount.toString(), args.topAnswerCount.toString(), args.topAnswerContents]);
+	noti.payload = {'questionSeq': args.questionSeq};
+
+	pushSender.send(noti, token, fnSuccess, fnFail);
+}
+
+pushSender.send = function(noti, token, fnSuccess, fnFail) {
 	productionProvider.send(noti, token)
 	.then(result => {
 		console.log('productionProvider', result);
