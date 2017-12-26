@@ -37,12 +37,18 @@ router.post('/', function(req, res, next) {
 		}
 		
 		var question = data.question;
-		pushSender.sendAnswerToQuestioner(user.pushToken, question.seq, question.contents.replace(/\n/gi," "), question.options[selection].value, question.answerCount)
-		.then(result => {
-			console.log(result);
+		pushSender.sendAnswerToQuestioner(user.pushToken, {
+			questionSeq:question.seq,
+			questionContents:question.contents.replace(/\n/gi," "),
+			answerContents: question.options[selection].value,
+			answerCount: question.answerCount
+		}, function() {
 			commonResponse.ok(res);
+		}, function() {
+			var errorMessage = 'Push message send fail.';
+			console.error(errorMessage)
+			commonResponse.error(res, errorMessage);
 		})
-		.catch(next);
 	})
 	.catch(next);
 });
