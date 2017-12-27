@@ -2,8 +2,9 @@ var express = require('express');
 var router = express.Router();
 var User = require('../models/user');
 var crypto = require('crypto');
-var getNextSeq = require('../autoIncrement');
 var commonResponse = require('../commons/commonResponse');
+var NoAccessKeyError = require('../errors/NoAccessKeyError');
+var NoUserError = require('../errors/NoUserError');
 var NotFoundError = require('../errors/NotFoundError');
 var DuplicationError = require('../errors/DuplicationError');
 var axios = require('axios');
@@ -14,8 +15,7 @@ var MEMBER = 2;
 router.get('/', function(req, res, next) {
 	var accessKey = req.get('Access-Key');
 	if (!accessKey) {
-		commonResponse.noAccessKey(res);
-		return;
+		throw new NoAccessKeyError();
 	}
 	
 	User.findOne({'accessKey': accessKey})
@@ -29,27 +29,25 @@ router.get('/', function(req, res, next) {
 })
 
 router.post('/', function(req, res, next) {
-	var body = req.body;
-	User.findOne({'email': body.email})
+	var accessKey = req.get('Access-Key');
+	if (!accessKey) {
+		throw new NoAccessKeyError();
+	}
+
+	var email = req.body.email;
+	User.findOne({'email': email})
 	.then(user => {
 		if (user) {
 			throw new DuplicationError('Email alreay exists.');
 		}
-		return getNextSeq('user');
+		return User.findOne({'accessKey': accessKey});
 	})
-	.then(result => {
-		var seq = result.seq;
-		var accessKey = crypto.createHash('sha256').update(seq.toString()).digest('hex');
-		var user = new User();
-		user.seq = seq;
-		user.type = MEMBER;
-		user.accessKey = accessKey;
-		user.email = body.email;
-		user.password = crypto.createHash('sha256').update(body.password).digest('hex');
-		return user.save().then(() => accessKey);
+	.then(user => {
+		var password = crypto.createHash('sha256').update(req.body.password).digest('hex');
+		return User.findByIdAndUpdate(user.id, {$set: {'type': MEMBER, 'email': email, 'password': password}});
 	})
-	.then(accessKey => {
-		commonResponse.ok(res, {accessKey: accessKey});
+	.then(() => {
+		commonResponse.ok(res);
 	})
 	.catch(next);
 });

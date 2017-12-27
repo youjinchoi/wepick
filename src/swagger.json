@@ -313,7 +313,7 @@
           "tags": [
             "member"
           ],
-          "summary": "Add a new member",
+          "summary": "Switch guest user to new member",
           "description": "",
           "operationId": "addMember",
           "consumes": [
@@ -331,6 +331,12 @@
               "schema": {
                 "$ref": "#/definitions/Member"
               }
+            },
+            {
+              "in": "header",
+              "name": "Access-Key",
+              "description": "user accessKey",
+              "required": true
             }
           ],
           "responses": {}
