@@ -43,7 +43,7 @@ if [ $SEND_MAIL -eq 1 ];
 then
 
 echo "Send mail!"
-echo "To: dev.youjin.choi@gmail.com, yj1361@naver.com" >> mail_$DATE.txt
+echo "To: dev.youjin.choi@gmail.com, razahel@gmail.com" >> mail_$DATE.txt
 echo "Subject: [wepick] memory $MEMORY_USED%, cpu $CPU_USED%, disk $DISK_USED% used." >> mail_$DATE.txt
 echo "" >> mail_$DATE.txt
 cat memory_$DATE.log >> mail_$DATE.txt
