@@ -1,12 +1,11 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
-var answerSchema = new Schema({
+var skipSchema = new Schema({
 	question: Number,
-	answerer: Number,
+	skipUser: Number,
 	questioner: Number,
-    selection: Number,
     createDate: {type: Date, default: Date.now}
 });
 
-module.exports = mongoose.model('answer', answerSchema);
+module.exports = mongoose.model('skip', skipSchema);

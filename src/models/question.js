@@ -9,6 +9,7 @@ var questionSchema = new Schema({
     maxAnswerCount: { type: Number, default: 50 },
     answerCount: { type: Number, default: 0 },
     answerers: { type: Array, default: [] },
+    skipUsers: { type: Array, default: [] },
     isClosed: { type: Boolean, default: false },
     createDate: { type: Date, default: Date.now }
 });

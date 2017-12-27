@@ -3,9 +3,11 @@ var router = express.Router();
 var User = require('../models/user');
 var Question = require('../models/question');
 var Answer = require('../models/answer');
+var Skip = require('../models/skip');
 var getNextSeq = require('../autoIncrement');
 var commonResponse = require('../commons/commonResponse');
 var NoUserError = require('../errors/NoUserError');
+var NoAccessKeyError = require('../errors/NoAccessKeyError');
 
 var filterObject = function(question) {
 	if (!question) {
@@ -15,6 +17,7 @@ var filterObject = function(question) {
 	delete temp._id;
 	delete temp.__v;
 	delete temp.answerers;
+	delete temp.skipUsers;
 	temp.createDate = temp.createDate.getTime();
 	return temp;
 }
@@ -30,30 +33,23 @@ var filterList = function(questions) {
 
 router.get('/', function(req, res, next) {
 	var accessKey = req.get('Access-Key');
-	if (req.query.type == 'guest' || !accessKey) {
-		router.listForGuestUser(req, res);
-		return;
-	}
-	User.findOne({'accessKey': accessKey}, function(error, user) {
-		if (error || !user) {
-			router.listForGuestUser(req, res, next);
-			return;
-		}
+	if (accessKey) {
 		if (req.query.type == 'my') {
-			router.listForMy(req, res, user, next);
-			return;
+			router.listForMy(req, res, next, accessKey);
 		} else {
-			router.listForLoginUser(req, res, user, next);
-			return;
+			router.listForLoginUser(req, res, next, accessKey);
 		}
-	});
+	} else {
+		router.listForGuestUser(req, res, next);
+	}
 });
 
 // 모든 질문 목록(비로그인시)
-router.listForGuestUser = function(req, res) {
+router.listForGuestUser = function(req, res, next) {
 	var count = req.query.count || 20;
-	var paging = req.query.next ? {'seq': {$lt: req.query.next}, 'isClosed': false} : {'isClosed': false};
-	Question.find(paging).sort({'seq': -1}).limit(count).exec(function(error, questions){
+	var paging = req.query.next ? {'seq': {$lt: req.query.next}} : {};
+	Question.find(paging).sort({'seq': -1}).limit(count)
+	.then(questions => {
 		var filtered = filterList(questions);
 		commonResponse.ok(res,
 			{
@@ -61,14 +57,24 @@ router.listForGuestUser = function(req, res) {
 				list: filtered
 			}
 		);
-	});
+	})
+	.catch(next);
 }
 
 // 내가 등록하거나 답변한 질문을 제외한 진행중인 질문 목록(로그인시)
-router.listForLoginUser = function(req, res, user, next) {
-	var count = req.query.count || 20;
-	var query = req.query.next ? { 'seq': { $lt: req.query.next }, 'isClosed': false, 'questioner' : { $ne: user.seq }, 'answerers': { $nin: [user.seq] } } : { 'isClosed': false, 'questioner' : { $ne: user.seq }, 'answerers': { $nin: [user.seq] } };
-	Question.find(query).sort({'seq': -1}).limit(count)
+router.listForLoginUser = function(req, res, next, accessKey) {
+	User.findOne({'accessKey': accessKey})
+	.then(user => {
+		if (!user) {
+			throw new NoUserError();
+		}
+		var count = req.query.count || 20;
+		var query = { 'isClosed': false, 'questioner' : { $ne: user.seq }, 'answerers': { $nin: [user.seq] }, 'skipUsers': { $nin: [user.seq] } };
+		if (req.query.next) {
+			query['seq'] = { $lt: req.query.next };
+		}
+		return Question.find(query).sort({'seq': -1}).limit(count);
+	})
 	.then(questions => {
 		var filtered = filterList(questions);
 		commonResponse.ok(res,
@@ -82,10 +88,20 @@ router.listForLoginUser = function(req, res, user, next) {
 }
 
 // 내가 등록한 질문 목록
-router.listForMy = function(req, res, user) {
-	var count = req.query.count || 20;
-	var paging = req.query.next ? {'seq': {$lt: req.query.next}, 'questioner': user.seq} : {'questioner': user.seq};
-	Question.find(paging).sort({'seq': -1}).limit(count).exec(function(error, questions){
+router.listForMy = function(req, res, next, accessKey) {
+	User.findOne({'accessKey': accessKey})
+	.then(user => {
+		if (!user) {
+			throw new NoUserError();
+		}
+		var count = req.query.count || 20;
+		var query = { 'questioner': user.seq };
+		if (req.query.next) {
+			query['seq'] = { $lt: req.query.next };
+		}
+		return Question.find(query).sort({'seq': -1}).limit(count);
+	})
+	.then(questions => {
 		var filtered = filterList(questions);
 		commonResponse.ok(res,
 			{
@@ -93,58 +109,57 @@ router.listForMy = function(req, res, user) {
 				list: filtered
 			}
 		);
-	});
+	})
+	.catch(next);
 }
 
-
-
-router.post('/', function(req, res){
+router.post('/', function(req, res, next){
 	var accessKey = req.get('Access-Key');
 	if (!accessKey) {
-		commonResponse.noAccessKey(res);
-		return;
+		throw new NoAccessKeyError();
 	}
-	User.findOne({'accessKey': accessKey}, function(error, user) {
-		if (error) {
-			commonResponse.error(res);
-			return;
-		}
+	User.findOne({'accessKey': accessKey})
+	.then(user => {
 		if (!user) {
-			commonResponse.noUser(res);
-			return;
+			throw new NoUserError();
 		}
-		var body = req.body;
 		var question = new Question();
 		question.seq = getNextSeq('question');
-		getNextSeq('question').then(result => {
-			var question = new Question();
-			question.seq = result.seq;
-			question.questioner = user.seq;
-			question.contents = body.contents;
-			question.maxAnswerCount = body.maxAnswerCount;
-			var options = (body.options || []).map(option => {
-				return {
-					value: option,
-					count: 0
-				}
-			})
-			question.options = options;
-			question.save(function(error) {
-				if (error) {
-					commonResponse.error(res);
-					return;
-				}
-				commonResponse.ok(res, filterObject(question));
-			});
+		return getNextSeq('question').then(result => {
+			return {result: result, user: user};
 		});
 	})
+	.then(data => {
+		var result = data.result;
+		if (!result || !result.seq) {
+			throw new Error();
+		}
+		var user = data.user;
+		var body = req.body;
+		var question = new Question();
+		question.seq = result.seq;
+		question.questioner = user.seq;
+		question.contents = body.contents;
+		question.maxAnswerCount = body.maxAnswerCount;
+		var options = (body.options || []).map(option => {
+			return {
+				value: option,
+				count: 0
+			}
+		})
+		question.options = options;
+		return question.save();
+	})
+	.then(question => {
+		commonResponse.ok(res, filterObject(question));
+	})
+	.catch(next);
 });
 
 router.get('/:questionSeq', function(req, res, next) {
 	var accessKey = req.get('Access-Key');
 	if (!accessKey) {
-		commonResponse.noAccessKey(res);
-		return;
+		throw new NoAccessKeyError();
 	}
 	User.findOne({'accessKey': accessKey})
 	.then(user => {
@@ -154,102 +169,90 @@ router.get('/:questionSeq', function(req, res, next) {
 		return Question.findOne({'seq': req.params.questionSeq});
 	})
 	.then(question => {
+		if (!question) {
+			throw new Error('Question not found.');
+		}
 		commonResponse.ok(res, filterObject(question));
 	})
 	.catch(next);
 });
 
-router.delete('/:questionSeq', function(req, res) {
+router.delete('/:questionSeq', function(req, res, next) {
 	var accessKey = req.get('Access-Key');
 	if (!accessKey) {
-		commonResponse.noAccessKey(res);
-		return;
+		throw new NoAccessKeyError();
 	}
-	User.findOne({'accessKey': accessKey}, function(error, user) {
-		if (error) {
-			commonResponse.error(res);
-			return;
-		}
+	User.findOne({'accessKey': accessKey})
+	.then(user => {
 		if (!user) {
-			commonResponse.noUser(res);
-			return;
+			throw new NoUserError();
 		}
-		Question.remove({seq: req.params.questionSeq, 'questioner': user.seq}, function(error){
-			if (error) {
-				commonResponse.error(res);
-				return;
-			}
-			Answer.remove({'question': req.params.questionSeq}, function(error) {
-				if (error) {
-					commonResponse.error(res);
-					return;
-				}
-				commonResponse.ok(res);
-			})
-		});
-	});
+		return Question.remove({seq: req.params.questionSeq, 'questioner': user.seq});
+	})
+	.then(() => {
+		return Answer.remove({'question': req.params.questionSeq});
+	})
+	.then(() => {
+		commonResponse.ok(res);
+	})
+	.catch(next);
 });
 
-router.patch('/close/:questionSeq', function(req, res) {
+router.patch('/close/:questionSeq', function(req, res, next) {
 	var accessKey = req.get('Access-Key');
 	if (!accessKey) {
-		commonResponse.noAccessKey(res);
-		return;
+		throw new NoAccessKeyError();
 	}
-	User.findOne({'accessKey': accessKey}, function(error, user) {
-		if (error) {
-			commonResponse.error(res);
-			return;
-		}
+	User.findOne({'accessKey': accessKey})
+	.then(user => {
 		if (!user) {
-			commonResponse.noUser(res);
-			return;
+			throw new NoUserError();
 		}
-		Question.update({seq: req.params.questionSeq, 'questioner': user.seq}, {$set: {'isClosed': true}}, function(error){
-			if (error) {
-				commonResponse.error(res);
-				return;
-			}
-			commonResponse.ok(res);
-		});
-	});
+		return Question.update({seq: req.params.questionSeq, 'questioner': user.seq}, {$set: {'isClosed': true}});
+	})
+	.then(() => {
+		commonResponse.ok(res);
+	})
+	.catch(next);
 });
 
-var SKIPPED = 0;
-router.post('/skip/:questionSeq', function(req, res) {
+router.post('/skip/:questionSeq', function(req, res, next) {
 	var accessKey = req.get('Access-Key');
 	if (!accessKey) {
-		commonResponse.noAccessKey(res);
-		return;
+		throw new NoAccessKeyError();
 	}
-	User.findOne({'accessKey': accessKey}, function(error, user) {
-		if (error) {
-			commonResponse.error(res);
-			return;
-		}
+	var questionSeq = req.params.questionSeq;
+	User.findOne({'accessKey': accessKey})
+	.then(user => {
 		if (!user) {
-			commonResponse.noUser(res);
-			return;
+			throw new NoUserError();
 		}
-		Question.findOne({seq: req.params.questionSeq}, function(error, question){
-			if (error) {
-				commonResponse.error(res);
-				return;
-			}
-			var answer = new Answer();
-			answer.question = question.seq;
-			answer.answerer = user.seq;
-			answer.questioner = question.questioner;
-			answer.type = SKIPPED;
-			answer.save(function(error) {
-				if (error) {
-					commonResponse.error(res);
-					return;
-				}
-				commonResponse.ok(res);
-			})
+		return Question.findOne({seq: questionSeq}).then(question => {
+			return {question: question, user: user};
 		});
-	});
+	})
+	.then(data => {
+		var question = data.question;
+		if (!question) {
+			throw new Error('Question not found.');
+		}
+		var user = data.user;
+		var skip = new Skip();
+		skip.question = questionSeq;
+		skip.skipUser = user.seq;
+		skip.questioner = question.questioner;
+		return skip.save().then(() => user);
+	})
+	.then(user => {
+		var updateInfo = {
+			$push: { skipUsers: user.seq }
+		};
+		return Question.findOneAndUpdate({seq: questionSeq}, updateInfo, {new: true});
+	})
+	.then(() => {
+		commonResponse.ok(res);
+	})
+	.catch(next);
 });
 
 module.exports = router;
