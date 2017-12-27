@@ -12,7 +12,8 @@ var messages = require('../commons/messages');
 
 router.post('/', function(req, res, next) {
 	var body = req.body;
-	User.findOne({'email': body.email})
+	var email = body.email;
+	User.findOne({'email': email})
 	.then(user => {
 		if (user) {
 			throw new DuplicationError(messages.DUPLICATE_EMAIL);
@@ -26,29 +27,33 @@ router.post('/', function(req, res, next) {
 		return verification.save().then(() => verification);
 	})
 	.then(verification => {
-		return mailSender.sendVerificationCode(body.email, verification.code, 'ko').then(info => {
+		var acceptLang = req.get('Accept-Language');
+		console.log('Accept-Language', acceptLang);
+		var lang = acceptLang.startsWith('ko') ? 'ko' : 'en';
+		return mailSender.sendVerificationCode(email, verification.code, lang).then(info => {
 			return {verification: verification, info: info};
 		});
 	})
 	.then(data => {
-		commonResponse.ok(res, {verificationSeq: data.verification.seq});
+		if (data.info.accepted && data.info.accepted[0] == email) {
+			commonResponse.ok(res, {verificationSeq: data.verification.seq});
+		} else {
+			console.error(data.info);
+			commonResponse.error(res, 'failed to send verification code.');
+		}
 	})
 	.catch(next);
 });
 	
-router.get('/:verificationSeq/:verificationCode', function(req, res) {
-	Verification.findOne({seq: req.params.verificationSeq}, function(error, verification) {
-		if (error) {
-			commonResponse.error(res);
-			return;
-		}
+router.get('/:verificationSeq/:verificationCode', function(req, res, next) {
+	Verification.findOne({seq: req.params.verificationSeq})
+	.then(verification => {
 		if (!verification) {
-			commonResponse.error(res);
-			return;
+			throw new Error('Verification not found.');
 		}
 		commonResponse.ok(res, {isVerified: verification.code == req.params.verificationCode});
-	})
-});	
+	}).catch(next);
+});
 	
 	
 module.exports = router;
