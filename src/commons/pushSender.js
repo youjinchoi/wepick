@@ -19,8 +19,10 @@ pushSender.sendAnswerToQuestioner = function(token, args, fnSuccess, fnFail) {
 	var noti = new apn.Notification();
 	noti.topic = 'com.Waak.WePick';
 	noti.contentAvailable = 1;
-	noti.setLocKey('push_answer');
-	noti.setLocArgs([args.questionContents, args.answerContents, args.answerCount.toString(), args.topAnswerContents, args.topAnswerCount.toString()]);
+	noti.setTitleLocKey('push_answer_title');
+	noti.setTitleLocArgs([args.questionContents, args.answerContents]);
+	noti.setLocKey('push_answer_content');
+	noti.setLocArgs([args.answerCount.toString(), args.topAnswerContents, args.topAnswerCount.toString()]);
 	noti.payload = {'questionSeq': args.questionSeq};
 
 	pushSender.send(noti, token, fnSuccess, fnFail);
@@ -30,8 +32,11 @@ pushSender.sendFinalAnswerToQuestioner = function(token, args, fnSuccess, fnFail
 	var noti = new apn.Notification();
 	noti.topic = 'com.Waak.WePick';
 	noti.contentAvailable = 1;
-	noti.setLocKey('push_final_answer');
-	noti.setLocArgs([args.questionContents, args.maxAnswerCount.toString(), args.topAnswerCount.toString(), args.topAnswerContents]);
+	noti.sound = 'default';
+	noti.setTitleLocKey('push_final_answer_title');
+	noti.setTitleLocArgs([args.questionContents, args.topAnswerContents]);
+	noti.setLocKey('push_final_answer_content');
+	noti.setLocArgs([args.topAnswerCount.toString(), args.maxAnswerCount.toString()]);
 	noti.payload = {'questionSeq': args.questionSeq};
 
 	pushSender.send(noti, token, fnSuccess, fnFail);

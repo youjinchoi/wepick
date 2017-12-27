@@ -29,6 +29,14 @@ var getTopAnswer = function(options) {
 	return topAnswer;
 }
 
+var truncate = function(str, length) {
+	if (!str || str.length <= length) {
+		return str;
+	} else {
+		return str.substr(0, length) + "...";
+	}
+}
+
 router.post('/', function(req, res, next) {
 	var serverKey = req.get('Server-Key');
 	if (serverKey != vars.serverKey) {
@@ -59,10 +67,10 @@ router.post('/', function(req, res, next) {
 		var topAnswer = getTopAnswer(question.options);
 		if (question.isClosed) {
 			pushSender.sendFinalAnswerToQuestioner(questioner.pushToken, {
-				questionSeq:question.seq,
-				questionContents:question.contents.replace(/\n/gi," "),
+				questionSeq: question.seq,
+				questionContents: truncate(question.contents.replace(/\n/gi," "), 20),
 				maxAnswerCount: question.maxAnswerCount,
-				topAnswerContents: topAnswer.contents,
+				topAnswerContents: truncate(topAnswer.contents, 20),
 				topAnswerCount: topAnswer.count,
 			}, function() {
 				commonResponse.ok(res);
@@ -74,12 +82,12 @@ router.post('/', function(req, res, next) {
 
 		} else {
 			pushSender.sendAnswerToQuestioner(questioner.pushToken, {
-				questionSeq:question.seq,
-				questionContents:question.contents.replace(/\n/gi," "),
-				answerContents: question.options[selection].value,
+				questionSeq: question.seq,
+				questionContents: truncate(question.contents.replace(/\n/gi," "), 20),
+				answerContents: truncate(question.options[selection].value, 20),
 				answerCount: question.options[selection].count,
 				topAnswerCount: topAnswer.count,
-				topAnswerContents: topAnswer.contents
+				topAnswerContents: truncate(topAnswer.contents, 20)
 			}, function() {
 				commonResponse.ok(res);
 			}, function() {
