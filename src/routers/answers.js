@@ -28,6 +28,10 @@ answers.post('/', function(req, res, next){
 			if (!question) {
 				throw new NotFoundError('Question not found.');
 			}
+
+			if (question.isClosed || question.maxAnswerCount == question.answerCount) {
+				throw new Error('Question already closed.');
+			}
 			return { question: question, user: user }
 		});
 	})
@@ -36,7 +40,7 @@ answers.post('/', function(req, res, next){
 			if (answerer == data.user.seq) {
 				throw Error(messages.ALREADY_ANSWERED);
 			}
-		})
+		});
 		
 		if (!data.question.options[req.body.selection]) {
 			throw InvalidParameterError(messages.INVALID_SELECTION);

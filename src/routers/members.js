@@ -1,8 +1,6 @@
 var express = require('express');
 var router = express.Router();
 var User = require('../models/user');
-var Question = require('../models/question');
-var Answer = require('../models/answer');
 var crypto = require('crypto');
 var getNextSeq = require('../autoIncrement');
 var commonResponse = require('../commons/commonResponse');
@@ -32,10 +30,6 @@ router.get('/', function(req, res, next) {
 
 router.post('/', function(req, res, next) {
 	var body = req.body;
-	getNextSeq('user')
-	.then(result => {
-		return User.findOne({'email': body.email});
-	})
 	User.findOne({'email': body.email})
 	.then(user => {
 		if (user) {

@@ -1,8 +1,6 @@
 var express = require('express');
 var router = express.Router();
 var User = require('../models/user');
-var Question = require('../models/question');
-var Answer = require('../models/answer');
 var commonResponse = require('../commons/commonResponse');
 var NoAccessKeyError = require('../errors/NoAccessKeyError');
 var NoUserError = require('../errors/NoUserError');
@@ -32,7 +30,6 @@ router.post('/', function(req, res, next) {
 			});
 		} else if (user.type == GUEST) {	// 게스트 유저 로그아웃시 탈퇴처리
 			var userSeq = user.seq;
-			console.log('user seq', userSeq);
 			user.remove()
 			.then(() => {
 				axios.delete(vars.api + '/users/remove-history/' + userSeq, {
