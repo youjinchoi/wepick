@@ -8,6 +8,7 @@ var NoAccessKeyError = require('./errors/NoAccessKeyError');
 var NoUserError = require('./errors/NoUserError');
 var AuthenticationError = require('./errors/AuthenticationError');
 var DuplicationError = require('./errors/DuplicationError');
+var EmailNotFoundError = require('./errors/EmailNotFoundError');
 var app = express();
 
 process.on('uncaughtException', function (error) {
@@ -46,6 +47,8 @@ app.use(function (error, req, res, next) {
 		commonResponse.authentication(res, error.message);
 	} else if (error instanceof DuplicationError) {
 		commonResponse.duplication(res, error.message);
+	} else if (error instanceof EmailNotFoundError) {
+		commonResponse.emailNotFound(res, error.message);
 	} else {
 		commonResponse.error(res, error.message);
 	}

@@ -3,6 +3,7 @@ var router = express.Router();
 var User = require('../models/user');
 var crypto = require('crypto');
 var commonResponse = require('../commons/commonResponse');
+var EmailNotFoundError = require('../errors/EmailNotFoundError');
 var NoUserError = require('../errors/NoUserError');
 var AuthenticationError = require('../errors/AuthenticationError');
 var messages = require('../commons/messages');
@@ -20,14 +21,14 @@ router.post('/', function(req, res, next) {
 	User.findOne({'email': body.email})
 	.then(user => {
 		if (!user) {
-			throw new NoUserError(messages.NO_USER);
+			throw new EmailNotFoundError(messages.EMAIL_NOT_FOUND);
 		}
 		var password = crypto.createHash('sha256').update(body.password).digest('hex');
 		if (user.password != password) {
 			throw new AuthenticationError(messages.INVALID_PASSWORD);
 		}
 		var newAccessKey = crypto.createHash('sha256').update(user.email + new Date().getTime().toString()).digest('hex');
-		return User.findByIdAndUpdate(user.id, {$set: {'accessKey': newAccessKey}}, {new: true});
+		return User.findByIdAndUpdate(user.id, {$set: {'accessKey': newAccessKey, 'pushToken': null}}, {new: true});
 	}).then(user => {
 		if (!user) {
 			throw new Error();

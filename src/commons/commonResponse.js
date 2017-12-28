@@ -42,6 +42,16 @@ commonResponse.duplication = function(res, message) {
     });
 }
 
+commonResponse.emailNotFound = function(res, message) {
+    return res.status(401).json({
+        status: "ERROR",
+        result: {
+            code: 1005,
+            message: message || messages.EMAIL_NOT_FOUND
+        }
+    });
+}
+
 commonResponse.ok = function(res, result) {
     if (result) {
         return res.json({
