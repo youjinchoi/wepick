@@ -1,0 +1,47 @@
+@CHARSET "UTF-8";
+
+/* 공통 - 프로젝트 카드 */
+.project-card, .project-card *{box-sizing:content-box!important;}
+.project-card{width:100%;text-align:left;position:relative;}
+/*.project-card .card-label{position:absolute;left:7px;top:-7px;padding:0 10px;font-size:13px;height:24px;line-height:25px;background:#4167d9;color:#fff;z-index:1}*/
+.project-card .card-img-section{position:relative;width:100%;}
+.project-card .card-img-section:after{position:absolute;left:0;top:0;width:100%;height:100%;content:'';border:1px solid rgba(0, 0, 0, .06);box-sizing:border-box!important}
+.project-card .card-img-section .project-img{display:block;width:100%;min-height:225px;}
+.project-card .card-img-section .project-img img{width:100%;display:block}
+.project-card .card-img-section .project-img .default{width:100%;min-height:225px;height:100%;display:block;background: #BABDC0;}
+.project-card .card-img-section .project-img .default p{padding-top: 96px;color:#fff;font-size: 13px;text-align:center;}
+.project-card .card-img-section .project-type{position:absolute;left:0;top:0;display:block;padding: 0 6px;height: 24px;font-size:12px;line-height: 24px;color:#fff;z-index:10;opacity: .96;}
+.project-card .card-img-section .project-type.reward{background:#c88af9;}
+.project-card .card-img-section .project-type.invest{background:#bf9c56}
+.project-card .progressbar-wrap,
+.project-card .coming-wrap{position:absolute;left:0;bottom:0;width:100%;height:48px;box-sizing:border-box!important;z-index:10;}
+.project-card .progressbar-wrap dl{padding:8px 20px 0}
+.project-card .progressbar-wrap dt{height: 6px;margin-bottom: 8px;background:#fff;background:rgba(255,255,255,.4);overflow:hidden;}
+.project-card .progressbar-wrap dt span{display:block;height: 6px;background:#1fdc6d}
+.project-card .progressbar-wrap dd{position:relative;text-align:center;line-height:20px;height:20px}
+.project-card .progressbar-wrap dd span{font-size:14px;color:#1D2129;letter-spacing: -.02em;display:block;}
+.project-card .progressbar-wrap dd span.amount{text-align:left;position:absolute;left:70px;top:0;}
+.project-card .progressbar-wrap dd span.percent{position:absolute;left:0;top:0;text-align:left;}
+.project-card .progressbar-wrap dd span.days{position:absolute;right:0;top:0;text-align:right;}
+/*.project-card .coming-wrap{text-align:center;padding-top:20px}
+.project-card .coming-wrap p{color:#fff;font-size:13px;line-height:20px;font-weight:500}
+.project-card .coming-wrap p strong{color:#28ffc7;font-weight:500}*/
+.project-card .card-info-section{position:relative;height: 160px;border: 1px solid #DADCE0;border-top:none;background:#7e4ae9;}
+/*.project-card .card-info-section h4{padding: 16px 0 0;margin: 0 0 8px;font-size: 17px;font-weight: 600;letter-spacing: -.02em;line-height: 24px;height: 48px;color: #1D2129;overflow: hidden;text-overflow: ellipsis;display: -webkit-box;-webkit-line-clamp: 2;-webkit-box-orient: vertical;word-wrap: break-word;}
+.project-card .card-info-section h5{margin:0;padding-bottom: 16px;font-weight: 400;font-size:13px;line-height: 18px;color:#fff;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;}
+.project-card .card-info-section h5 em{display:inline-block;margin-left:5px;padding:0 2px;font-size:10px;height:15px;line-height:15px;border:1px solid #dbdbdb;color:#979797}*/
+/*.project-card .card-info-section h5.premium{position:relative;padding-right:60px;white-space:normal}
+.project-card .card-info-section h5.premium em{position:absolute;right:0;top:0;}*/
+/*.project-card .card-info-section .card-category{position:absolute;left:0;bottom:20px;width:100%;height:12px;}
+.project-card .card-info-section .card-category:after{content:"";clear:both;display:block;}
+.project-card .card-info-section .card-category .category1{float:left;display:block;padding-left:20px;width:57%;text-align:left;font-size:13px;color:#0d0f12;letter-spacing:-1px;box-sizing:border-box!important}
+.project-card .card-info-section .card-category .category2{float:right;display:block;padding-right:20px;width:43%;text-align:right;font-size:11px;color:#00cca3;letter-spacing:-1px;box-sizing:border-box!important}*/
+
+/*#wcomingProjectContent .project-card .card-info-section{padding-bottom:20px}*/
+/*#wcomingProjectContent .project-card .btn-wrap{text-align:center;}
+#wcomingProjectContent .project-card .btn-wrap button{display:inline-block;height:34px;line-height:34px;padding:0 15px;font-size:13px;background:#D3D2D3;border:none;}
+#wcomingProjectContent .project-card .btn-wrap span{display:inline-block;height:32px;line-height:32px;padding:0 15px;font-size:13px;color:#D3D2D3;background:none;border:1px solid #D3D2D3;}*/
+
+@media screen and (min-width: 960px) {
+  .project-card .card-img-section .project-img{height:225px;overflow:hidden;}
+}

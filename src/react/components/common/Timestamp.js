@@ -6,10 +6,10 @@ class Timestamp extends Component {
         const diff = now.getTime() - this.props.timestamp;
         if (diff < 3600000) { // < 1시간
             const minute = Math.floor(diff/60000);
-            return minute < 2 ? "1 minute ago" : minute + " minutes ago"; // n분전
+            return minute + "분 전"; // n분전
         } else if (diff < 86400000) {   // < 24시간
             const hour = Math.floor(diff/3600000);
-            return hour < 2 ? "1 hour ago" : hour + " hours ago"; // n시간전
+            return hour + "시간 전"; // n시간전
         } else {
             const date = new Date(this.props.timestamp);
             let hours = date.getHours();

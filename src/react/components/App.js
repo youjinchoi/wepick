@@ -11,15 +11,12 @@ const App = () => {
 		<Router basename="/admin">
 			<div>
 		        <Header />
-				<div className="page-content">
-					<Switch>
-						<Route exact path="/" render={() => <QuestionList />}/>
-						<Route exact path="/questions" render={() => <QuestionList />}/>
-						<Route exact path="/questions/form" render={() => <QuestionForm />}/>
-						<Route exact path="/login" render={() => <Login />}/>
-					</Switch>
-				</div>
-				<Footer/>
+				<Switch>
+					<Route exact path="/" render={() => <QuestionList />}/>
+					<Route exact path="/questions" render={() => <QuestionList />}/>
+					<Route exact path="/questions/form" render={() => <QuestionForm />}/>
+					<Route exact path="/login" render={() => <Login />}/>
+				</Switch>
 	        </div>
 		</Router>
 	);
