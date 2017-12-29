@@ -30,6 +30,8 @@ app.use('/login', require('./routers/login'));
 app.use('/logout', require('./routers/logout'));
 app.use('/verifications', require('./routers/verifications'));
 app.use('/pushes', require('./routers/pushes'));
+app.use('/admin', require('./routers/admin'));
+app.use('/static', express.static(__dirname + '/static'));
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
