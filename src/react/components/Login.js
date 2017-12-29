@@ -19,7 +19,7 @@ class Login extends Component {
                             <form onSubmit={this.submit} name="frm_login" id="frm_login">
                                 <input ref={el => this.passCode = el} type="password" id="userName" name="userName" className="input-text" placeholder="passcode를 입력해 주세요."/>
                                 <div className="btn-wrap">
-                                    <button type="button" id="btnLogin" className="btn-block-mint">확인</button>
+                                    <button onClick={this.submit} type="button" id="btnLogin" className="btn-block-mint">확인</button>
                                 </div>
                             </form>
                         </div>
