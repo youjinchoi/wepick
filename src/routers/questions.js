@@ -71,7 +71,7 @@ router.listForLoginUser = function(req, res, next, accessKey) {
 		var count = req.query.count || 20;
 		var query = { 'isClosed': false, 'questioner' : { $ne: user.seq }, 'answerers': { $nin: [user.seq] }, 'skipUsers': { $nin: [user.seq] } };
 		if (req.query.next) {
-			query['seq'] = { $lt: req.query.next };
+			query['seq'] = { $gt: req.query.next };
 		}
 		return Question.find(query).sort({'seq': 1}).limit(count);
 	})
