@@ -36,12 +36,11 @@ class QuestionForm extends Component {
                     <input ref={el => this.option2 = el} type="text" placeholder="Input Option"/><br/>
                     <input ref={el => this.option3 = el} type="text" placeholder="Input Option(optional)"/><br/>
                     <input ref={el => this.option4 = el} type="text" placeholder="Input Option(optional)"/><br/>
-                    <select ref={el => this.maxAnswerCount = el} defaultValue={1000}>
+                    <select ref={el => this.maxAnswerCount = el} defaultValue={100}>
                         <option value={5}>5</option>
                         <option value={10}>10</option>
                         <option value={50}>50</option>
                         <option value={100}>100</option>
-                        <option value={1000}>1000</option>
                     </select>
                     <input type="submit"/>
                 </form>
