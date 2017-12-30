@@ -73,7 +73,7 @@ router.listForLoginUser = function(req, res, next, accessKey) {
 		if (req.query.next) {
 			query['seq'] = { $lt: req.query.next };
 		}
-		return Question.find(query).sort({'seq': -1}).limit(count);
+		return Question.find(query).sort({'seq': 1}).limit(count);
 	})
 	.then(questions => {
 		var filtered = filterList(questions);
