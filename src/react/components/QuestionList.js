@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import update from "react-addons-update";
 import $ from "jquery";
+import Question from "./Question";
 import Timestamp from "./common/Timestamp"
 import {withRouter} from "react-router-dom";
 
@@ -15,7 +16,7 @@ class QuestionList extends Component {
             hasNext: true
         };
     }
-
+    
     render() {
         if (!window.__admin_loggedIn) {
             return null;
@@ -24,59 +25,30 @@ class QuestionList extends Component {
         if (!this.state.questions || this.state.questions.length == 0) {
             return (
                 <div className="wrapper home">
-                    no question yet T.T
                 </div>
             );
         }
 
         return (
             <div id="mainContainer">
-                <div id="wrewardmainWrap" className="wsubmain-wrap">
-            <div className="wsubmain-content" style={{paddingTop: "15px"}}>
-                <div id="wrewardProjectContent">
-                    <div className="wsubmain-projectlist">
-                        <ul id="progressCardList">
-                            {this.state.questions.map((question, index) => {
-                                return (
-                                    <li key={index}>
-                                        <div className="project-card">
-                                            <div className="card-img-section">
-                                                <span style={{position: "absolute", left: "0", padding: "10px", zIndex: "1", color: "#90949c", fontSize: "80%"}}><Timestamp timestamp={question.createDate}/></span>
-                                                <a onClick={e => this.deleteQuestion(e, question.seq, index)} href="#" style={{position: "absolute", right: "0", padding: "10px", zIndex: "1", color: "#90949c", fontSize: "80%"}}>
-                                                    삭제
-                                                </a>
-                                                <div className="project-img" style={{backgroundColor: "#fff", height: "250px", display: "flex", justifyContent: "center", alignItems: "center", position: "relative", top: "50%"}}>
-                                                    {question.contents}
-                                                </div>
-                                                <div className="progressbar-wrap">
-                                                    <dl>
-                                                        <dt><span style={{"width":(question.answerCount/question.maxAnswerCount*100)+"%"}}></span></dt>
-                                                        <dd>
-                                                            <span className="percent">{question.answerCount/question.maxAnswerCount*100}%</span>
-                                                            <span className="days">{question.answerCount}/{question.maxAnswerCount}</span>
-                                                        </dd>
-                                                    </dl>
-                                                </div>
-                                            </div>
-                                            <div className="card-info-section">
-                                                {question.options.map((option, index) => {
-                                                    return (
-                                                        <div key={index} style={{height: "40px", display: "flex", alignItems: "center"}}>
-                                                            <div style={{paddingLeft: "20px", alignItems: "center", color: "#fff", fontSize: "90%", fontWeight: "100"}}>{option.value}</div>
-                                                            <div style={{position: "absolute", right: "20px", textAlign: "right", color: "#1fdc6d", fontSize: "90%"}}>{option.count}</div>
-                                                        </div>
-                                                    );
-                                                })}
-                                            </div>
-                                        </div>
-                                    </li>
-                                );
-                            })}
-                        </ul>
-                    </div>
+            	<div id="wrewardmainWrap" className="wsubmain-wrap">
+		            <div className="wsubmain-content">
+		                <div id="wrewardProjectContent">
+		                    <div className="wsubmain-projectlist">
+		                        <ul id="progressCardList">
+		                            {this.state.questions.map((question, index) => {
+		                                return (
+		                                    <li key={index}>
+		                                    	<Question question={question} index={index} deleteQuestion={this.deleteQuestion} />
+		                                    </li>
+		                                );
+		                            })}
+		                        </ul>
+		                    </div>
+		                </div>
+		            </div>
                 </div>
             </div>
-                    </div></div>
         );
     }
 
@@ -85,7 +57,7 @@ class QuestionList extends Component {
             this.props.history.push("/login");
             return;
         }
-        this.getDocuments();
+        this.getQuestions();
         $(window).on("scroll", $.proxy(this.loadMoreIfScrollEnd, this));
     }
 
@@ -93,7 +65,7 @@ class QuestionList extends Component {
         $(window).off("scroll", $.proxy(this.loadMoreIfScrollEnd, this));
     }
 
-    getDocuments = () => {
+    getQuestions = () => {
         if (!!this.AJAX_LOCKED) {
             return;
         }
@@ -137,7 +109,7 @@ class QuestionList extends Component {
 
     loadMore() {
         if (!!this.state.hasNext) {
-            this.getDocuments(this.state.next);
+            this.getQuestions(this.state.next);
         }
     }
 

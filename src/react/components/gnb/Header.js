@@ -1,5 +1,8 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
+import $ from "jquery";
+import {withRouter} from "react-router-dom";
+
 
 class Header extends Component {
   render() {
@@ -34,12 +37,33 @@ class Header extends Component {
 					<ul className="util-menu">
 						<li><Link to="/questions">질문 관리</Link></li>
 						<li><Link to="/questions/form">질문 등록</Link></li>
+						{window.__admin_loggedIn ? 
+								<li className="point"><a onClick={this.logout} href="#">로그아웃</a></li> : null
+						}
 					</ul>
 				</div>
 			</div>
 		</div>
     );
   }
+  
+  logout = (e) => {
+      $.ajax({
+          url: "/admin/admin-logout",
+          type: "post",
+          dataType: "json",
+          success: function(res) {
+              if (res && res.status == "OK") {
+                  window.__admin_loggedIn = false;
+                  this.props.history.push("/login");
+              }
+          }.bind(this),
+          error: function(res, err) {
+              alert('요청중 오류가 발생하였습니다.');
+          }.bind(this),
+          timeout: 2000
+      });
+  }
 }
 
-export default Header;
+export default withRouter(Header);

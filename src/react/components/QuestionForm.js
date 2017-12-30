@@ -6,7 +6,7 @@ class QuestionForm extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            user: window.__user ? window.__user : null,
+            user: window.__user_loggedIn ? {email: window.__user_email, accessKey: window.__user_accessKey} : null,
             createdQuestion: null
         };
     }
@@ -15,35 +15,59 @@ class QuestionForm extends Component {
         if (!window.__admin_loggedIn) {
             return null;
         }
+        
+        if (!this.state.user) {
+        	return (
+    			<div id="accountWrap">
+                    <div id="newContainer">
+                        <div className="account-wrap">
+                            <div className="email-input-wrap bigger">
+                            	<h3>질문을 등록하려면 사용자 로그인이 필요합니다.</h3><br/>
+                                <form onSubmit={this.login} name="frm_login" id="frm_login">
+                                    <input ref={el => this.email = el} type="email" id="userName" name="userName" className="input-text" placeholder="이메일"/>
+                                    <input ref={el => this.password = el} type="password" className="input-text" placeholder="비밀번호"/>
+                                    <div className="btn-wrap">
+                                        <input onClick={this.login} type="submit" className="btn-block-mint" value="확인"/>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        	);
+        }
 
         return (
-            <div className="wrapper home">
-                {this.state.user ?
-                    <div>{this.state.user.email} <input type="button" value="로그아웃"/></div>
-                    :
-                    <div>
-                        <form onSubmit={this.login}>
-                            <input ref={el => this.email = el} type="text" placeholder="email"/><br/>
-                            <input ref={el => this.password = el} type="password" placeholder="password"/>
-                            <input type="submit"/>
-                        </form>
-                    </div>
-                }
-                질문등록<br/>
-                <form onSubmit={this.postQuestion}>
-                    <textarea ref={el => this.contents = el} placeholder="Input Question"></textarea><br/>
-                    <input ref={el => this.option1 = el} type="text" placeholder="Input Option"/><br/>
-                    <input ref={el => this.option2 = el} type="text" placeholder="Input Option"/><br/>
-                    <input ref={el => this.option3 = el} type="text" placeholder="Input Option(optional)"/><br/>
-                    <input ref={el => this.option4 = el} type="text" placeholder="Input Option(optional)"/><br/>
-                    <select ref={el => this.maxAnswerCount = el} defaultValue={100}>
-                        <option value={5}>5</option>
-                        <option value={10}>10</option>
-                        <option value={50}>50</option>
-                        <option value={100}>100</option>
-                    </select>
-                    <input type="submit"/>
-                </form>
+            <div id="accountWrap">
+	            <div id="newContainer">
+		            <div className="account-wrap" style={{padding:"10px 20px"}}>
+		            	<div>
+        				<div style={{height:"35px",display:"flex", alignItems:"center", float:"left",margin:"10px 0"}}>{this.state.user.email} 계정으로 질문 등록</div>
+        				<button style={{margin:"10px 0",width:"80px",height:"35px", lineHeight:"35px", float:"right",background:"#90949c"}} onClick={this.logout} type="button" id="btnLogin" className="btn-block-mint">로그아웃</button>
+		                </div>
+        				<div className="">
+		                    <form onSubmit={this.postQuestion} name="frm_login" id="frm_login">
+		                    	<textarea className="text-area" style={{width:"100%", height:"200px", textAlign: "center", lineHeight:"200px"}} ref={el => this.contents = el} placeholder="질문 내용을 입력하세요"></textarea><br/>
+		                    	<input ref={el => this.option1 = el} type="text" id="userName" name="userName" className="input-text" placeholder="첫번째 선택지를 입력하세요(필수)"/>
+		                    	<input ref={el => this.option2 = el} type="text" id="userName" name="userName" className="input-text" placeholder="두번째 선택지를 입력하세요(필수)"/>
+	                    		<input ref={el => this.option3 = el} type="text" id="userName" name="userName" className="input-text" placeholder="세번째 선택지를 입력하세요"/>
+		                        <input ref={el => this.option4 = el} type="text" id="userName" name="userName" className="input-text" placeholder="네번째 선택지를 입력하세요"/>
+	                        	<div style={{width:"100%"}}>
+			                    	답변 받을 개수를 선택하세요.
+				                    <select style={{float:"right"}} ref={el => this.maxAnswerCount = el} defaultValue={100}>
+				                        <option value={5}>5개</option>
+				                        <option value={10}>10개</option>
+				                        <option value={50}>50개</option>
+				                        <option value={100}>100개</option>
+				                    </select>
+				                </div>
+		                        <div className="btn-wrap">
+		                            <button onClick={this.postQuestion} type="button" id="btnLogin" className="btn-block-mint">확인</button>
+		                        </div>
+		                    </form>
+		                </div>
+		            </div>
+		        </div>
             </div>
         );
     }
@@ -57,15 +81,15 @@ class QuestionForm extends Component {
     login = (e) => {
         e.preventDefault();
         if (!this.email.value) {
-            alert('email을 입력해주세요.');
+            alert('이메일을 입력해주세요.');
             return;
         }
         if (!this.password.value) {
-            alert('password를 입력해주세요.');
+            alert('비밀번호를 입력해주세요.');
             return;
         }
         $.ajax({
-            url: "/login",
+            url: "/admin/user-login",
             type: "post",
             data: JSON.stringify({
                 email: this.email.value,
@@ -75,12 +99,36 @@ class QuestionForm extends Component {
             dataType: "json",
             success: function(res) {
                 if (res && res.status == "OK") {
-                    window.__user = {
-                        email: this.email.value,
-                        accessKey: res.result.accessKey
-                    };
+                    window.__user_email = this.email.value;
+                    window.__user_accessKey = res.result.accessKey;
                     this.setState({
-                        user: window.__user
+                        user: {
+                        	email: this.email.value,
+                        	accessKey: res.result.accessKey
+                        }
+                    });
+                }
+            }.bind(this),
+            error: function(res, err) {
+            }.bind(this),
+            timeout: 2000
+        });
+    }
+	                        	
+    logout = (e) => {
+        e.preventDefault();
+        $.ajax({
+            url: "/admin/user-logout",
+            type: "post",
+            contentType: "application/json",
+            dataType: "json",
+            success: function(res) {
+                if (res && res.status == "OK") {
+                	window.__user_loggedIn = false;
+                	window.__user_email = null;
+                    window.__user_accessKey = null;
+                    this.setState({
+                        user: null
                     });
                 }
             }.bind(this),

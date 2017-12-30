@@ -17,7 +17,7 @@ class Login extends Component {
                     <div className="account-wrap">
                         <div className="email-input-wrap bigger">
                             <form onSubmit={this.submit} name="frm_login" id="frm_login">
-                                <input ref={el => this.passCode = el} type="password" id="userName" name="userName" className="input-text" placeholder="passcode를 입력해 주세요."/>
+                                <input ref={el => this.passCode = el} type="password" id="userName" name="userName" className="input-text" placeholder="passcode를 입력해 주세요"/>
                                 <div className="btn-wrap">
                                     <button onClick={this.submit} type="button" id="btnLogin" className="btn-block-mint">확인</button>
                                 </div>
@@ -36,7 +36,7 @@ class Login extends Component {
             return;
         }
         $.ajax({
-            url: "/admin/login",
+            url: "/admin/admin-login",
             type: "post",
             dataType: "json",
             beforeSend : function(xhr){

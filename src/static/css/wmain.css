@@ -232,7 +232,7 @@
 .wsubmain-top .sub-text{font-size:14px;line-height:20px;color:#4a4a4a}
 #winvestmainWrap .wsubmain-top h2{color:#fff}
 #winvestmainWrap .wsubmain-top .sub-text{color:#fff}
-.wsubmain-content{padding:0 10px}
+.wsubmain-content{padding:15px 10px 0 10px}
 .wsubmain-projectlist.coming{padding-bottom:80px;}
 .wsubmain-projectlist.coming h3.mid-title{padding:0 10px;margin-bottom:30px;font-size:28px;font-weight:500;color:#4a4a4a}
 .wsubmain-projectlist li{margin-bottom:15px;}
@@ -508,7 +508,7 @@
 #wrewardmainKeyVisual .mb-selector{display:none}
 #wrewardmainKeyVisual .pc-selector{display:block}
 
-#wrewardmainWrap .wsubmain-content{width:960px;margin:0 auto}
+#wrewardmainWrap .wsubmain-content{width:960px;margin:0 auto;padding-top:15px}
 #noticeSection p.text a{display:inline;padding-left:10px;}
 #winvestProjectContent{padding-bottom:50px;margin-top:30px}
 #winvestProjectContent:after{content:"";clear:both;display:block;}
