@@ -6,8 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node src/app.js",
-    "admin-web-start": "webpack-dev-server --hot --inline --config src/react/config/webpack.local.config.js",
-    "admin-web-build": "webpack --config src/react/config/webpack.real.config.js"
+    "admin-web-start": "webpack-dev-server --hot --inline --config src/react/webpack/webpack.local.config.js",
+    "admin-web-build": "webpack --config src/react/webpack/webpack.real.config.js"
   },
   "author": "",
   "license": "ISC",
@@ -16,7 +16,9 @@
     "axios": "^0.17.1",
     "body-parser": "^1.18.2",
     "crypto": "^1.0.1",
+    "ejs": "^2.5.7",
     "express": "^4.16.2",
+    "express-session": "^1.15.6",
     "jquery": "^3.2.1",
     "mongodb": "^2.2.33",
     "mongoose": "^4.13.3",

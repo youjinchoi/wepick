@@ -45,7 +45,6 @@ class Login extends Component {
             success: function(res) {
                 if (res && res.status == "OK") {
                     window.__admin_loggedIn = true;
-                    window.__admin_passCode = this.passCode.value;
                     this.props.history.push("/questions");
                 }
             }.bind(this),

@@ -129,7 +129,7 @@ class QuestionForm extends Component {
             error: function(res, err) {
                 alert('요청중 오류가 발생하였습니다.');
             }.bind(this),
-            timeout: 2000
+            timeout: 5000
         });
     }
 }

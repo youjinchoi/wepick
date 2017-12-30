@@ -106,9 +106,6 @@ class QuestionList extends Component {
             url: url,
             type: "get",
             dataType: "json",
-            beforeSend : function(xhr){
-                xhr.setRequestHeader("Server-Key", window.__admin_passCode);
-            }.bind(this),
             success: function(res) {
                 if (!res.result.list || res.result.list.length == 0) {
                     this.setState({
@@ -127,7 +124,7 @@ class QuestionList extends Component {
             error: function(res, err) {
                 this.AJAX_LOCKED = false;
             }.bind(this),
-            timeout: 2000
+            timeout: 5000
         });
     }
 
@@ -151,9 +148,6 @@ class QuestionList extends Component {
                 url: "/admin/questions/" + seq,
                 type: "delete",
                 dataType: "json",
-                beforeSend : function(xhr){
-                    xhr.setRequestHeader("Server-Key", window.__admin_passCode);
-                },
                 success: function(res) {
                     if (res && res.status == "OK") {
                         this.setState({
@@ -166,7 +160,7 @@ class QuestionList extends Component {
                 error: function(res, err) {
                     alert('요청중 오류가 발생하였습니다.');
                 }.bind(this),
-                timeout: 2000
+                timeout: 5000
             });
         }
     }

@@ -3,6 +3,8 @@ const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = require('./swagger.json');
 var bodyParser = require('body-parser');
 var db = require('./db');
+var session = require('express-session');
+var vars = require('../config/vars');
 var commonResponse = require('./commons/commonResponse');
 var NoAccessKeyError = require('./errors/NoAccessKeyError');
 var NoUserError = require('./errors/NoUserError');
@@ -16,6 +18,16 @@ process.on('uncaughtException', function (error) {
 });
 
 app.use(bodyParser.json());
+
+app.use(session({
+	 secret: vars.serverKey,
+	 resave: false,
+	 saveUninitialized: true
+}));
+
+app.set('views', __dirname + '/views');
+app.set('view engine', 'ejs');
+app.engine('html', require('ejs').renderFile);
 
 app.get('/connection-test', function (req, res) {
 	res.status(200).send(global.dbConnection);
