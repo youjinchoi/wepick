@@ -46,7 +46,7 @@ button{cursor:pointer;font-family:Roboto, 'Noto Sans KR', sans-serif;-webkit-fon
     #headerBar .gnbsub-menu h1 em.logo:before{content:"\e938";font-size:35px;line-height: 56px;}
     #headerBar .gnbsub-menu .menu-list{height:100%;}
     #headerBar .gnbsub-menu .menu-list li{display:inline-block;vertical-align:middle;}
-    #headerBar .gnbsub-menu .menu-list li a,
+    #headerBar .gnbsub-menu .menu-list li a{position:relative;display:inline-block;padding:0 8px;height:100%;line-height:56px;vertical-align:middle;letter-spacing:-.02em;font-size:15px;font-weight:400;color:#44484b;border-bottom:2px solid transparent;transition: all 0.2s ease-out;box-sizing:border-box}
     #headerBar .gnbsub-menu .menu-list li.active a,
     #headerBar .gnbsub-menu .menu-list li a:hover{border-color:#1fdc6d}
 }
