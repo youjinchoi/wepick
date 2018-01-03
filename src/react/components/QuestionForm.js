@@ -42,8 +42,8 @@ class QuestionForm extends Component {
 	            <div id="newContainer">
 		            <div className="account-wrap" style={{padding:"10px 20px"}}>
 		            	<div>
-        				<div style={{height:"35px",display:"flex", alignItems:"center", float:"left",margin:"10px 0"}}>{this.state.user.email} 계정으로 질문 등록</div>
-        				<button style={{margin:"10px 0",width:"80px",height:"35px", lineHeight:"35px", float:"right",background:"#90949c"}} onClick={this.logout} type="button" id="btnLogin" className="btn-block-mint">로그아웃</button>
+        				<div style={{height:"35px",display:"flex", alignItems:"center", float:"left",margin:"10px 0"}}>{this.state.user.email}</div>
+        				<button style={{margin:"10px 0",width:"80px",height:"35px", lineHeight:"35px", float:"right",background:"#90949c", padding: "0"}} onClick={this.logout} type="button" id="btnLogin" className="btn-block-mint">로그아웃</button>
 		                </div>
         				<div className="">
 		                    <form onSubmit={this.postQuestion} name="frm_login" id="frm_login">
