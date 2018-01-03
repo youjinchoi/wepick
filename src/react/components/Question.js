@@ -16,11 +16,11 @@ class Question extends Component {
         var question = this.props.question;
     	var topAnswerCount = this.getTopAnswerCount(question.options);
     	return (
-    		<div className="project-card">
+    		<div className="question-card">
                 <div className="card-img-section">
                     <span className="create-date"><Timestamp timestamp={question.createDate}/></span>
                     <a onClick={e => this.props.deleteQuestion(e, question.seq, this.props.index)} className="btn-delete" href="#">삭제</a>
-                    <div className="project-img">{question.contents}</div>
+                    <div className="question-contents project-img">{question.contents}</div>
                     <div className="progressbar-wrap">
                         <dl>
                             <dt><span style={{"width":(question.answerCount/question.maxAnswerCount*100)+"%"}}></span></dt>
@@ -35,8 +35,14 @@ class Question extends Component {
                     {question.options.map((option, index) => {
                         return (
                             <div className="question-option" key={index}>
-                                <div className="value">{option.value}</div>
-                                <div className={"count" + (topAnswerCount == option.count ? " top" : "")}>{option.count}</div>
+                                <div className="value-wrap">
+                                    <div className="value">
+                                        <span className="u_txt">{option.value}</span>
+                                    </div>
+                                </div>
+                                <div className="count">
+                                    <span className={(topAnswerCount == option.count ? " top" : "")}>{option.count}</span>
+                                </div>
                             </div>
                         );
                     })}

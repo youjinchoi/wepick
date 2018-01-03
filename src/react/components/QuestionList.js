@@ -31,11 +31,11 @@ class QuestionList extends Component {
 
         return (
             <div id="mainContainer">
-            	<div id="wrewardmainWrap" className="wsubmain-wrap">
+            	<div id="question-list-wrap" className="wsubmain-wrap">
 		            <div className="wsubmain-content">
-		                <div id="wrewardProjectContent">
-		                    <div className="wsubmain-projectlist">
-		                        <ul id="progressCardList">
+		                <div id="question-list-content">
+		                    <div className="question-list">
+		                        <ul>
 		                            {this.state.questions.map((question, index) => {
 		                                return (
 		                                    <li key={index}>

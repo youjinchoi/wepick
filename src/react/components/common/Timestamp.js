@@ -20,7 +20,7 @@ class Timestamp extends Component {
             if (minutes < 10) {
                 minutes = "0" + minutes;
             }
-            return (date.getFullYear() + ". " + (date.getMonth()+1) + ". " + date.getDate() + " " + date.getHours() + ":" + minutes);
+            return (date.getFullYear() + ". " + (date.getMonth()+1) + ". " + date.getDate() + " " + hours + ":" + minutes);
         }
     }
 }

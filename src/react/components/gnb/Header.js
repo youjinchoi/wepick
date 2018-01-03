@@ -7,7 +7,7 @@ import {withRouter} from "react-router-dom";
 class Header extends Component {
   render() {
 	return (
-		<div id="wadizHeader">
+		<div id="header">
 			<div id="headerBar">
 				<div className="left-section">
 					<div id="MowGnb" className="device-gnb">
