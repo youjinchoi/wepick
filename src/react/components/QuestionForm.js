@@ -98,7 +98,7 @@ class QuestionForm extends Component {
             contentType: "application/json",
             dataType: "json",
             success: function(res) {
-                if (res && res.status == "OK") {
+            	if (res && res.status == "OK") {
                     window.__user_email = this.email.value;
                     window.__user_accessKey = res.result.accessKey;
                     this.setState({
@@ -109,7 +109,15 @@ class QuestionForm extends Component {
                     });
                 }
             }.bind(this),
-            error: function(res, err) {
+            error: function(res) {
+            	const errorCode = res.responseJSON.result.code;
+            	if (errorCode == 1003) {
+            		alert('비밀번호가 올바르지 않습니다.');
+            	} else if (errorCode == 1005) {
+            		alert('이메일이 존재하지 않습니다.');
+            	} else {
+            		alert('요청 중 오류가 발생하였습니다.');
+            	}
             }.bind(this),
             timeout: 2000
         });

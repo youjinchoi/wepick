@@ -49,7 +49,12 @@ class Login extends Component {
                 }
             }.bind(this),
             error: function(res, err) {
-                alert('요청중 오류가 발생하였습니다.');
+            	const errorCode = res.responseJSON.result.code;
+            	if (errorCode == 1003) {
+            		alert('passcode가 올바르지 않습니다.');
+            	} else {
+            		alert('요청중 오류가 발생하였습니다.');
+            	}
             }.bind(this),
             timeout: 2000
         });

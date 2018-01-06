@@ -122,6 +122,7 @@ class QuestionList extends Component {
                 dataType: "json",
                 success: function(res) {
                     if (res && res.status == "OK") {
+                    	alert(res.result);
                         this.setState({
                             questions: update(this.state.questions, {
                                 $splice: [[index, 1]]

@@ -5,10 +5,13 @@ var User = require('../models/user');
 var Question = require('../models/question');
 var Answer = require('../models/answer');
 var commonResponse = require('../commons/commonResponse');
+var messages = require('../commons/messages');
 var InvalidParameterError = require('../errors/InvalidParameterError');
 var path = require('path');
 var vars = require('../../config/vars');
-var AuthenticationError = require('../errors/AuthenticationError')
+var AuthenticationError = require('../errors/AuthenticationError');
+var EmailNotFoundError = require('../errors/EmailNotFoundError');
+var mailSender = require('../commons/mailSender');
 
 router.post('/admin-login', function(req, res) {
 	var serverKey = req.get('Server-Key');
@@ -76,13 +79,27 @@ router.delete('/questions/:questionSeq', function(req, res, next) {
 
 		console.log('ADMIN deletes question', question);
 		var questionerSeq = question.questioner;
-		return Question.remove({'seq': questionSeq, 'questioner': question.questioner}).then(() => questionerSeq);
+		return Question.remove({'seq': questionSeq, 'questioner': question.questioner}).then(() => question);
 	})
-	.then((questionerSeq) => {
-		return Answer.remove({'questioner': questionerSeq});
+	.then((question) => {
+		return Answer.remove({'questioner': question.questioner}).then(() => question);
 	})
-	.then(() => {
-		commonResponse.ok(res);
+	.then((question) => {
+		return User.findOne({'seq': question.questioner}).then(user => {
+			return {user: user, question: question};
+		});
+	})
+	.then(data => {
+		if (data.user && data.user.email) {
+			mailSender.sendQuestionDeleteNofi(data.user.email, data.question)
+			.then((result) => {
+				console.log(result);
+				const isSuccess = result.accepted && result.accepted.length > 0;
+				commonResponse.ok(res, isSuccess ? '삭제 후 안내 메일 발송이 완료되었습니다.' : '삭제 후 안내 메일 발송에 실패하였습니다.');
+			});
+		} else {
+			commonResponse.ok(res, '삭제가 완료되었습니다.');
+		}
 	})
 	.catch(next);
 });
