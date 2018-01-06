@@ -35,8 +35,8 @@ class Header extends Component {
 				</div>
 				<div className="right-section">
 					<ul className="util-menu">
-						<li><Link to="/questions">질문 관리</Link></li>
-						<li><Link to="/questions/form">질문 등록</Link></li>
+						<li className="mobile-only"><Link to="/questions">질문 관리</Link></li>
+						<li className="mobile-only"><Link to="/questions/form">질문 등록</Link></li>
 						{window.__admin_loggedIn ? 
 								<li className="point"><a onClick={this.logout} href="#">로그아웃</a></li> : null
 						}

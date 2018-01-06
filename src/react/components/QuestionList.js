@@ -10,7 +10,11 @@ class QuestionList extends Component {
 
     constructor(props) {
         super(props);
-        this.state = {
+        this.state = this.getInitialState();
+    }
+    
+    getInitialState() {
+    	return {
             questions: null,
             next: null,
             hasNext: true
@@ -60,19 +64,26 @@ class QuestionList extends Component {
         this.getQuestions();
         $(window).on("scroll", $.proxy(this.loadMoreIfScrollEnd, this));
     }
+    
+    componentWillReceiveProps(nextProps) {
+    	if (this.props.location.key != nextProps.location.key) {
+    		this.setState(this.getInitialState());
+    		this.getQuestions();
+    	}
+    }
 
     componentWillUnmount() {
         $(window).off("scroll", $.proxy(this.loadMoreIfScrollEnd, this));
     }
 
-    getQuestions = () => {
+    getQuestions = (next) => {
         if (!!this.AJAX_LOCKED) {
             return;
         }
         this.AJAX_LOCKED = true;
         var url = "/questions";
-        if (!!this.state.next) {
-            url += "?next=" + this.state.next;
+        if (!!next) {
+            url += "?next=" + next;
         }
         $.ajax({
             url: url,

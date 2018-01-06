@@ -18,7 +18,7 @@ select {width: 100px;height: 30px;padding-left: 10px;font-size: 18px;border: 1px
 .input-text::-ms-clear{display: none;}
 .input-text:focus{border-color:#1fdc6d;outline:none}
 .input-text.error{border-color:#d0021b;}
-.text-area{box-sizing:border-box;display:block;width:100%;padding:0 17px;margin-bottom:7px;height:46px;line-height:45px;font-size:13px;color:#4a4a4a;background:#fff;border:1px solid #e4e4e4;outline:none}
+.text-area{box-sizing:border-box;display:block;width:100%;padding:0 17px;margin-bottom:7px;height:46px;font-size:13px;color:#4a4a4a;background:#fff;border:1px solid #e4e4e4;outline:none}
 button{cursor:pointer;font-family:Roboto, 'Noto Sans KR', sans-serif;-webkit-font-smoothing:antialiased}
 
 /* Header */
@@ -52,6 +52,7 @@ button{cursor:pointer;font-family:Roboto, 'Noto Sans KR', sans-serif;-webkit-fon
 }
 #headerBar .right-section{position:absolute;right:0;top:0;padding-right:16px;text-align:right;}
 #headerBar .right-section .util-menu{display:inline-block;padding:0;height:48px}
+#headerBar .right-section .util-menu li.mobile-only{display:inline-block}
 #headerBar .right-section .util-menu li{display:inline-block;padding-left: 16px;height:48px;}
 #headerBar .right-section .util-menu li a{font-size:15px;display:inline-block;letter-spacing:-.02em;font-weight:400;line-height:48px;color:#44484b}
 #headerBar .right-section .util-menu li.point a{color: #1fdc6d;}
@@ -67,6 +68,7 @@ button{cursor:pointer;font-family:Roboto, 'Noto Sans KR', sans-serif;-webkit-fon
     #headerBar .right-section{padding-right:24px;}
     #headerBar .right-section .util-menu,
     #headerBar .right-section .util-menu li{height:56px}
+    #headerBar .right-section .util-menu li.mobile-only{display:none}
     #headerBar .right-section .util-menu li a{line-height:56px}
 }
 
@@ -153,6 +155,8 @@ a.btn-block-mint.disable, button.btn-block-mint.disable{background:rgba(80, 226,
 .btn-wrap.smaller{padding-top:5px;}
 .btn-wrap.with-border{padding-bottom:25px;border-bottom:solid 1px #e4e4e4;}
 .input-text.disable{background:#e7e7e7;}
+.question-form-contents{height: 200px;padding:17px;font-family:Arial}
+.question-form-select{float:right}
 #newContainer{min-height:100%;background:#eee;}
 @media screen and (min-width: 1000px) {
     .account-wrap{width:350px;margin:0 auto;padding-top:75px;}

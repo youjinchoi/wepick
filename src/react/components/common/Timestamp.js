@@ -12,16 +12,13 @@ class Timestamp extends Component {
             return hour + "시간 전"; // n시간전
         } else {
             const date = new Date(this.props.timestamp);
-            let hours = date.getHours();
-            if (hours < 10) {
-                hours = "0" + hours;
-            }
-            let minutes = date.getMinutes();
-            if (minutes < 10) {
-                minutes = "0" + minutes;
-            }
-            return (date.getFullYear() + ". " + (date.getMonth()+1) + ". " + date.getDate() + " " + hours + ":" + minutes);
+            return date.getFullYear() + ". " + (this.getFormattedNumber(date.getMonth()+1)) + ". " + this.getFormattedNumber(date.getDate()) + " " 
+            		+ this.getFormattedNumber(date.getHours()) + ":" + this.getFormattedNumber(date.getMinutes());
         }
+    }
+    
+    getFormattedNumber(num) {
+    	return num < 10 ? "0" + num : num;
     }
 }
 

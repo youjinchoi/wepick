@@ -7,7 +7,12 @@ class QuestionForm extends Component {
         super(props);
         this.state = {
             user: window.__user_loggedIn ? {email: window.__user_email, accessKey: window.__user_accessKey} : null,
-            createdQuestion: null
+            contents: "",
+            option1: "",
+            option2: "",
+            option3: "",
+            option4: "",
+            maxAnswerCount: 100
         };
     }
 
@@ -47,14 +52,14 @@ class QuestionForm extends Component {
 		                </div>
         				<div className="">
 		                    <form onSubmit={this.postQuestion} name="frm_login" id="frm_login">
-		                    	<textarea className="text-area" style={{width:"100%", height:"200px", textAlign: "center", lineHeight:"200px"}} ref={el => this.contents = el} placeholder="질문 내용을 입력하세요"></textarea><br/>
-		                    	<input ref={el => this.option1 = el} type="text" id="userName" name="userName" className="input-text" placeholder="첫번째 선택지를 입력하세요(필수)"/>
-		                    	<input ref={el => this.option2 = el} type="text" id="userName" name="userName" className="input-text" placeholder="두번째 선택지를 입력하세요(필수)"/>
-	                    		<input ref={el => this.option3 = el} type="text" id="userName" name="userName" className="input-text" placeholder="세번째 선택지를 입력하세요"/>
-		                        <input ref={el => this.option4 = el} type="text" id="userName" name="userName" className="input-text" placeholder="네번째 선택지를 입력하세요"/>
+		                    	<textarea ref={el => this.contents = el} onChange={this.handleChange} value={this.state.contents} name="contents" className="question-form-contents text-area" placeholder="질문 내용을 입력하세요"></textarea><br/>
+		                    	<input ref={el => this.option1 = el} onChange={this.handleChange} value={this.state.option1} name="option1" type="text" className="input-text" placeholder="첫번째 선택지를 입력하세요(필수)"/>
+		                    	<input ref={el => this.option2 = el} onChange={this.handleChange} value={this.state.option2} name="option2" type="text" className="input-text" placeholder="두번째 선택지를 입력하세요(필수)"/>
+	                    		<input ref={el => this.option3 = el} onChange={this.handleChange} value={this.state.option3} name="option3" type="text" className="input-text" placeholder="세번째 선택지를 입력하세요"/>
+		                        <input ref={el => this.option4 = el} onChange={this.handleChange} value={this.state.option4} name="option4" type="text" className="input-text" placeholder="네번째 선택지를 입력하세요"/>
 	                        	<div style={{width:"100%"}}>
 			                    	답변 받을 개수를 선택하세요.
-				                    <select style={{float:"right"}} ref={el => this.maxAnswerCount = el} defaultValue={100}>
+				                    <select ref={el => this.maxAnswerCount = el} onChange={this.handleChange} value={this.state.maxAnswerCount} name="maxAnswerCount" className="question-form-select">
 				                        <option value={5}>5개</option>
 				                        <option value={10}>10개</option>
 				                        <option value={50}>50개</option>
@@ -76,6 +81,21 @@ class QuestionForm extends Component {
         if (!window.__admin_loggedIn) {
             this.props.history.push("/login");
         }
+    }
+    
+    handleChange = (e) => {
+    	this.setState({[e.target.name]: e.target.value});
+    }
+    
+    clear() {
+    	this.setState({
+    		contents: "",
+    		option1: "",
+    		option2: "",
+    		option3: "",
+    		option4: "",
+    		maxAnswerCount: 100
+    	});
     }
 
     login = (e) => {
@@ -148,38 +168,38 @@ class QuestionForm extends Component {
 
     postQuestion = (e) => {
         e.preventDefault();
-        if (!this.contents.value) {
+        if (this.isBlank(this.state.contents)) {
             alert("질문을 입력해주세요.");
             return;
         }
-        if (!this.option1.value || !this.option2.value) {
+        if (this.isBlank(this.state.option1) || this.isBlank(this.state.option2)) {
             alert("답변은 2개 이상 입력해주세요.");
             return;
         }
-        var options = [this.option1.value, this.option2.value];
-        if (this.option3.value) {
-            options.push(this.option3.value);
+        var options = [this.state.option1, this.state.option2];
+        if (!this.isBlank(this.state.option3)) {
+            options.push(this.state.option3);
         }
-        if (this.option4.value) {
-            options.push(this.option4.value);
+        if (!this.isBlank(this.state.option4)) {
+            options.push(this.state.option4);
         }
         $.ajax({
-            url: "/questions/",
+            url: "/questions",
             type: "post",
             dataType: "json",
             data: JSON.stringify({
-                contents: this.contents.value,
+                contents: this.state.contents,
                 options: options,
-                maxAnswerCount: this.maxAnswerCount.value || 5
+                maxAnswerCount: this.state.maxAnswerCount || 5
             }),
             contentType: "application/json",
             beforeSend : function(xhr){
                 xhr.setRequestHeader("Access-Key", this.state.user.accessKey);
             }.bind(this),
             success: function(res) {
-                console.log(res);
                 if (res && res.status == "OK") {
-                    alert("질문이 등록되었습니다.");
+                	alert('질문이 등록되었습니다.');
+                	this.clear();
                 }
             }.bind(this),
             error: function(res, err) {
@@ -187,6 +207,10 @@ class QuestionForm extends Component {
             }.bind(this),
             timeout: 5000
         });
+    }
+    
+    isBlank(str) {
+    	return !str || str.trim() == "";
     }
 }
 

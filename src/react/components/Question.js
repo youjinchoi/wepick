@@ -20,7 +20,7 @@ class Question extends Component {
                 <div className="card-img-section">
                     <span className="create-date"><Timestamp timestamp={question.createDate}/></span>
                     <a onClick={e => this.props.deleteQuestion(e, question.seq, this.props.index)} className="btn-delete" href="#">삭제</a>
-                    <div className="question-contents project-img">{question.contents}</div>
+                    <div className="question-contents">{question.contents}</div>
                     <div className="progressbar-wrap">
                         <dl>
                             <dt><span style={{"width":(question.answerCount/question.maxAnswerCount*100)+"%"}}></span></dt>
